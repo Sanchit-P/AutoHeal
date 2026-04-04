@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-  <title>SH/OS v3 — Sentient Self-Healing Core</title>
+  <title>AUTO HEAL</title>
   <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js">
     async function loadMetrics() {
@@ -410,7 +410,7 @@ setInterval(loadMetrics, 2000);
   <header>
     <div class="brand">
       <div class="brand-logo"><svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg></div>
-      <div><div class="brand-title">SH/OS v3</div><div class="brand-sub">SENTIENT HEALING CORE</div></div>
+      <div><div class="brand-title">AUTO HEAL</div><div class="brand-sub">SENTIENT HEALING CORE</div></div>
     </div>
     <div class="header-badges">
       <div class="ai-chip"><span class="ai-dot"></span> NEURAL PREDICTOR</div>
@@ -470,7 +470,7 @@ setInterval(loadMetrics, 2000);
       <div class="card"><div class="section-label">⚙️ ADAPTIVE LIMITS</div><div style="display:flex; justify-content:space-between;"><span>CPU warn/crit</span><span><span id="threshCpuWarnDisplay">75</span>% / <span id="threshCpuCritDisplay">90</span>%</span></div><div style="display:flex; justify-content:space-between;"><span>RAM warn/crit</span><span><span id="threshRamWarnDisplay">75</span>% / <span id="threshRamCritDisplay">90</span>%</span></div><div class="section-label" style="margin-top:12px;">📊 RISK METER</div><div>CPU risk <span id="riskCpuNum">0</span>%</div><div class="progress-bar-bg"><div id="riskCpuBarFill" style="height:4px; width:0%; background:var(--crit);"></div></div><div>RAM risk <span id="riskRamNum">0</span>%</div><div class="progress-bar-bg"><div id="riskRamBarFill" style="height:4px; width:0%; background:var(--warn);"></div></div><div style="margin-top:8px;">Network Anomaly Score</div><div class="progress-bar-bg"><div id="netRiskFill" style="height:4px; width:0%; background:var(--info);"></div></div></div>
     </div>
   </div>
-  <footer><span>SH/OS v3 · Autonomous healing fabric</span><span>Uptime: <span id="uptimeSpan">0s</span> · restarts: <span id="restartCountSpan">0</span></span></footer>
+  <footer><span>AUTO HEAL · Autonomous healing fabric</span><span>Uptime: <span id="uptimeSpan">0s</span> · restarts: <span id="restartCountSpan">0</span></span></footer>
 </div>
 
 <script>
@@ -586,7 +586,7 @@ setInterval(loadMetrics, 2000);
   function filterLogUI(f){ sys.logFilter=f; document.querySelectorAll('.log-entry').forEach(el=>{ let type=el.children[1]?.innerText.toLowerCase(); if(f==='all' || type===f) el.style.display='flex'; else el.style.display='none'; }); document.getElementById('logFilterAll').style.background=f==='all'?'#2b9eff':'none'; document.getElementById('logFilterCrit').style.background=f==='crit'?'#ff4d6d':'none'; }
   function clearLogUI(){ document.getElementById('logList').innerHTML=''; sys.logEntries=[]; }
   
-  window.addEventListener('load',()=>{ initCharts(); setInterval(tickSim,1300); addLog('info','SH/OS v3 initialized — thermal removed, network enhanced'); addLog('safe','Adaptive thresholds & twin predictor active'); document.getElementById('forceRestartBtn').onclick=()=>triggerRestart(); document.getElementById('autoHealToggle').onchange=e=>sys.autoHeal=e.target.checked; document.getElementById('rtSoft').onclick=()=>{ sys.restartType='soft'; addLog('info','Restart mode: SOFT'); }; document.getElementById('rtHard').onclick=()=>{ sys.restartType='hard'; addLog('info','Restart mode: HARD'); }; document.getElementById('rtDelay').onclick=()=>{ sys.restartType='delayed'; addLog('info','Restart mode: DELAYED'); }; document.getElementById('demoOverloadBtn').onclick=()=>{ sys.overloadDemo=true; sys.cpu=rand(87,96); sys.ram=rand(82,92); addLog('warn','Demo: overload simulation'); }; document.getElementById('demoAttackBtn').onclick=()=>{ sys.attackDemo=true; sys.netIn=rand(320,500); addLog('crit','Demo: DDoS attack simulation'); setDefenseModeUI(true); }; document.getElementById('demoRecoverBtn').onclick=()=>{ sys.overloadDemo=false; sys.attackDemo=false; sys.cpu=rand(20,40); sys.ram=rand(30,45); sys.netIn=rand(6,25); setDefenseModeUI(false); setStatusUI('safe'); addLog('safe','Demo: full recovery'); }; document.getElementById('demoHealBtn').onclick=()=>{ if(!sys.healingActive && !sys.restarting){ sys.cpu=rand(85,92); sys.ram=rand(80,88); startSelfHeal(); } }; tickSim(); });
+  window.addEventListener('load',()=>{ initCharts(); setInterval(tickSim,1300); addLog('info','AUTO HEAL initialized — thermal removed, network enhanced'); addLog('safe','Adaptive thresholds & twin predictor active'); document.getElementById('forceRestartBtn').onclick=()=>triggerRestart(); document.getElementById('autoHealToggle').onchange=e=>sys.autoHeal=e.target.checked; document.getElementById('rtSoft').onclick=()=>{ sys.restartType='soft'; addLog('info','Restart mode: SOFT'); }; document.getElementById('rtHard').onclick=()=>{ sys.restartType='hard'; addLog('info','Restart mode: HARD'); }; document.getElementById('rtDelay').onclick=()=>{ sys.restartType='delayed'; addLog('info','Restart mode: DELAYED'); }; document.getElementById('demoOverloadBtn').onclick=()=>{ sys.overloadDemo=true; sys.cpu=rand(87,96); sys.ram=rand(82,92); addLog('warn','Demo: overload simulation'); }; document.getElementById('demoAttackBtn').onclick=()=>{ sys.attackDemo=true; sys.netIn=rand(320,500); addLog('crit','Demo: DDoS attack simulation'); setDefenseModeUI(true); }; document.getElementById('demoRecoverBtn').onclick=()=>{ sys.overloadDemo=false; sys.attackDemo=false; sys.cpu=rand(20,40); sys.ram=rand(30,45); sys.netIn=rand(6,25); setDefenseModeUI(false); setStatusUI('safe'); addLog('safe','Demo: full recovery'); }; document.getElementById('demoHealBtn').onclick=()=>{ if(!sys.healingActive && !sys.restarting){ sys.cpu=rand(85,92); sys.ram=rand(80,88); startSelfHeal(); } }; tickSim(); });
 </script>
 </body>
 </html>
