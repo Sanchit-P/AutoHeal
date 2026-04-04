@@ -1,4 +1,4 @@
-# AutoHeal
+# Title: AutoHeal
 ## Hackathon Problem Statement – “Autonomous IT: Rethinking the Future of Self-Managing Systems” 
 ### Context 
 Today, large-scale IT environments—whether in cloud, on-premise, or edge setups—are becoming too complex for manual management. With thousands of interconnected services, continuous deployments, and dynamic workloads, human operators struggle to maintain system reliability, security, and cost-efficiency. The next leap forward is Autonomous IT — intelligent systems capable of self-monitoring, self-healing, self-optimizing, and self-securing, inspired by human-like adaptive behavior. 
@@ -21,3 +21,14 @@ execution of corrective or optimization actions.
 • Focus equally on practicality and explainability — how and why the system makes a 
 decision. 
 • Bonus points for real-time dashboards, cloud integration, or open-source tooling. 
+
+## Team Details
+### Team Name: OutLawz
+Members:
+|Name | Email | Ph. No.|
+|------|--------|-------|
+|Sanchit Pimpalkar|pimpalkarsanchit@gmail.com|8668517548|
+|Ved Rokde|pimpalkarsanchit@gmail.com|8668517548|
+|Om Salunke|pimpalkarsanchit@gmail.com|8668517548|
+|Ruturaj Raut|pimpalkarsanchit@gmail.com|8668517548|
+
