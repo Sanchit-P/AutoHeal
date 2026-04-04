@@ -1,6 +1,7 @@
 from fastapi import APIRouter
 from engine.anomaly import detect_anomaly
 from engine.healer import determine_healing
+from engine.llm import suggest_root_cause
 from db.database import insert_log
 from datetime import datetime
 import json
@@ -26,7 +27,17 @@ async def ingest_metrics(data: dict):
     healing_action, anomaly_type = "no_action", "none"
     if is_anomaly:
         healing_action, anomaly_type = determine_healing(cpu, memory, network, confidence)
-    
+
+    llm_analysis = None
+    if is_anomaly:
+        try:
+            llm_analysis = suggest_root_cause(
+                {"cpu": cpu, "memory": memory, "network": network},
+                [],
+            )
+        except Exception:
+            llm_analysis = None
+
     dry_run = data.get("dry_run", False)
     
     if is_anomaly and healing_action != "no_action":
@@ -47,7 +58,8 @@ async def ingest_metrics(data: dict):
         "confidence": confidence,
         "healing_action": healing_action,
         "anomaly_type": anomaly_type,
-        "status": "healing" if is_anomaly else "healthy"
+        "status": "healing" if is_anomaly else "healthy",
+        "llm_analysis": llm_analysis,
     }
 
 @router.get("/metrics/latest")

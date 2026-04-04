@@ -17,6 +17,6 @@ def detect_anomaly(cpu: float, memory: float, network: float):
     
     # Normalize confidence to 0-100%
     confidence = min(100, max(0, (0.5 - score) * 100 + 50))
-    is_anomaly = prediction == -1
-    
-    return is_anomaly, round(confidence, 2)
+    is_anomaly = bool(prediction == -1)
+
+    return is_anomaly, float(round(confidence, 2))
