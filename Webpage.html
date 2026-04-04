@@ -1,0 +1,592 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>SH/OS v3 — Sentient Self-Healing Core</title>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js">
+    async function loadMetrics() {
+  try {
+    const res = await fetch("http://localhost:8000/metrics"); // backend API
+    const data = await res.json();
+
+    // DEBUG: see backend data in console
+    console.log("Backend Data:", data);
+
+    // Update UI (change keys based on your backend response)
+    document.getElementById("cpu").innerText = data.cpu || data.cpu_usage || "N/A";
+    document.getElementById("memory").innerText = data.memory || data.ram_usage || "N/A";
+    document.getElementById("status").innerText = data.status || data.attack || "Normal";
+
+  } catch (err) {
+    console.error("Error fetching data:", err);
+  }
+}
+
+// Run once when page loads
+loadMetrics();
+
+// Auto refresh every 2 seconds (real-time effect)
+setInterval(loadMetrics, 2000);
+  </script>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    :root {
+      --bg-void: #05070a;
+      --bg-panel: #0a0f16;
+      --bg-card: #0e151f;
+      --bg-elevated: #131c28;
+      --border-subtle: #1e2a3a;
+      --border-glow: #00ffa3;
+      --safe: #00f5a0;
+      --safe-glow: rgba(0, 245, 160, 0.2);
+      --warn: #ffcd4a;
+      --warn-glow: rgba(255, 205, 74, 0.25);
+      --crit: #ff4d6d;
+      --crit-glow: rgba(255, 77, 109, 0.3);
+      --info: #2b9eff;
+      --info-glow: rgba(43, 158, 255, 0.2);
+      --twin: #b26eff;
+      --text-primary: #edf4fa;
+      --text-secondary: #8ba6bc;
+      --text-muted: #3e5568;
+      --font-display: 'Space Grotesk', system-ui, sans-serif;
+      --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
+      --card-radius: 20px;
+      --transition-smooth: all 0.3s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+    }
+
+    body {
+      background: var(--bg-void);
+      color: var(--text-primary);
+      font-family: var(--font-display);
+      line-height: 1.45;
+      overflow-x: hidden;
+    }
+
+    .grid-bg {
+      position: fixed;
+      inset: 0;
+      background-image: 
+        linear-gradient(rgba(43, 158, 255, 0.02) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(43, 158, 255, 0.02) 1px, transparent 1px);
+      background-size: 48px 48px;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .shell {
+      position: relative;
+      z-index: 2;
+      max-width: 1600px;
+      margin: 0 auto;
+      padding: 20px 24px 24px;
+    }
+
+    header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 16px;
+      margin-bottom: 24px;
+      padding-bottom: 16px;
+      border-bottom: 1px solid var(--border-subtle);
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .brand-logo {
+      width: 46px;
+      height: 46px;
+      background: linear-gradient(135deg, rgba(0, 245, 160, 0.1), rgba(0, 245, 160, 0.02));
+      border-radius: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid rgba(0, 245, 160, 0.4);
+      box-shadow: 0 0 16px rgba(0, 245, 160, 0.1);
+    }
+
+    .brand-logo svg {
+      width: 26px;
+      height: 26px;
+      fill: var(--safe);
+    }
+
+    .brand-title {
+      font-size: 1.35rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      background: linear-gradient(135deg, #fff, var(--safe));
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+
+    .brand-sub {
+      font-size: 0.7rem;
+      color: var(--text-secondary);
+      font-family: var(--font-mono);
+      letter-spacing: 0.2em;
+    }
+
+    .header-badges {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .ai-chip {
+      background: rgba(43, 158, 255, 0.08);
+      border: 1px solid rgba(43, 158, 255, 0.35);
+      padding: 6px 14px;
+      border-radius: 40px;
+      font-size: 0.75rem;
+      font-family: var(--font-mono);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--info);
+    }
+
+    .ai-dot {
+      width: 8px;
+      height: 8px;
+      background: var(--info);
+      border-radius: 50%;
+      box-shadow: 0 0 8px var(--info);
+      animation: pulse-dot 1.4s infinite;
+    }
+
+    .status-pill {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(0, 245, 160, 0.08);
+      border: 1px solid var(--safe);
+      padding: 6px 16px;
+      border-radius: 40px;
+      font-family: var(--font-mono);
+      font-weight: 600;
+      font-size: 0.8rem;
+    }
+
+    .dashboard-grid {
+      display: grid;
+      grid-template-columns: 1fr 320px;
+      gap: 20px;
+      align-items: start;
+    }
+
+    .left-stack {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .metrics-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 20px;
+    }
+
+    .card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--card-radius);
+      padding: 18px 20px;
+      backdrop-filter: blur(2px);
+      transition: var(--transition-smooth);
+    }
+
+    .card:hover {
+      border-color: rgba(0, 245, 160, 0.3);
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+    }
+
+    .card-header {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 16px;
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--text-secondary);
+    }
+
+    .metric-digit {
+      font-family: var(--font-mono);
+      font-size: 2.8rem;
+      font-weight: 500;
+      line-height: 1;
+      margin-bottom: 10px;
+      color: var(--safe);
+      transition: color 0.2s;
+    }
+
+    .progress-bar-bg {
+      background: var(--bg-elevated);
+      border-radius: 100px;
+      height: 6px;
+      margin: 12px 0 6px;
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      height: 100%;
+      width: 0%;
+      border-radius: 100px;
+      background: var(--safe);
+      transition: width 0.5s ease;
+    }
+
+    .chart-pair {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+    }
+
+    .mini-chart {
+      height: 110px;
+      position: relative;
+    }
+
+    .controls-card {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .section-label {
+      font-size: 0.7rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      margin-bottom: 12px;
+      font-weight: 500;
+    }
+
+    .btn-group {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      flex: 1;
+      padding: 10px 12px;
+      border-radius: 14px;
+      font-weight: 600;
+      font-size: 0.75rem;
+      font-family: var(--font-display);
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+      background: transparent;
+      cursor: pointer;
+      transition: 0.2s;
+      border: 1px solid;
+    }
+
+    .btn-crit { border-color: var(--crit); color: var(--crit); background: rgba(255, 77, 109, 0.05); }
+    .btn-crit:hover { background: rgba(255, 77, 109, 0.15); box-shadow: 0 0 12px var(--crit-glow); }
+    .btn-warn { border-color: var(--warn); color: var(--warn); background: rgba(255, 205, 74, 0.05); }
+    .btn-warn:hover { background: rgba(255, 205, 74, 0.12); }
+    .btn-safe { border-color: var(--safe); color: var(--safe); background: rgba(0, 245, 160, 0.05); }
+    .btn-info { border-color: var(--info); color: var(--info); background: rgba(43, 158, 255, 0.05); }
+
+    .toggle-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: var(--bg-elevated);
+      padding: 10px 14px;
+      border-radius: 16px;
+    }
+
+    .health-ring {
+      display: flex;
+      justify-content: center;
+      margin: 8px 0;
+    }
+
+    .ring-wrapper {
+      position: relative;
+      width: 100px;
+      height: 100px;
+    }
+
+    .ring-score {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      font-family: var(--font-mono);
+      font-weight: 700;
+      font-size: 1.6rem;
+    }
+
+    .twin-panel {
+      background: linear-gradient(145deg, #0b1018, #070b12);
+      border-color: rgba(178, 110, 255, 0.3);
+    }
+
+    .twin-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      margin-top: 8px;
+    }
+
+    .twin-metric-card {
+      background: var(--bg-elevated);
+      border-radius: 16px;
+      padding: 10px;
+      text-align: center;
+      border: 1px solid rgba(178, 110, 255, 0.2);
+    }
+
+    .log-container {
+      max-height: 180px;
+      overflow-y: auto;
+      font-family: var(--font-mono);
+      font-size: 0.7rem;
+    }
+
+    .log-entry {
+      display: flex;
+      gap: 12px;
+      padding: 8px 0;
+      border-bottom: 1px solid rgba(30, 42, 58, 0.5);
+    }
+
+    @keyframes pulse-dot {
+      0%, 100% { opacity: 1; transform: scale(1);}
+      50% { opacity: 0.4; transform: scale(0.9);}
+    }
+
+    .attack-alert {
+      background: linear-gradient(90deg, rgba(255, 77, 109, 0.1), rgba(255, 205, 74, 0.05));
+      border-left: 3px solid var(--warn);
+      border-radius: 14px;
+      padding: 12px 16px;
+      display: none;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+    .attack-alert.active { display: flex; }
+    .toast-stack { position: fixed; top: 20px; right: 20px; z-index: 1000; display: flex; flex-direction: column; gap: 8px; }
+    .toast { background: #0f1822; border-radius: 14px; padding: 12px 18px; border-left: 3px solid; box-shadow: 0 12px 28px black; animation: slideIn 0.3s ease; width: 280px; }
+    @keyframes slideIn { from { opacity: 0; transform: translateX(40px);} to { opacity: 1; transform: translateX(0);} }
+    footer { margin-top: 32px; padding-top: 16px; border-top: 1px solid var(--border-subtle); display: flex; justify-content: space-between; font-size: 0.65rem; color: var(--text-muted); flex-wrap: wrap; }
+    .network-stats { display: flex; gap: 16px; margin-top: 8px; justify-content: space-between; }
+    @media (max-width: 1000px) { .dashboard-grid { grid-template-columns: 1fr; } .twin-grid { grid-template-columns: 1fr 1fr; } .metrics-grid { gap: 12px; } }
+  </style>
+</head>
+<body>
+  <h2>System Metrics</h2>
+
+<p>CPU: <span id="cpu">Loading...</span></p>
+<p>Memory: <span id="memory">Loading...</span></p>
+<p>Status: <span id="status">Loading...</span></p>
+<div class="grid-bg"></div>
+<div class="toast-stack" id="toastRoot"></div>
+<div class="shell">
+  <header>
+    <div class="brand">
+      <div class="brand-logo"><svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg></div>
+      <div><div class="brand-title">SH/OS v3</div><div class="brand-sub">SENTIENT HEALING CORE</div></div>
+    </div>
+    <div class="header-badges">
+      <div class="ai-chip"><span class="ai-dot"></span> NEURAL PREDICTOR</div>
+      <div class="ai-chip" style="border-color:var(--safe);color:var(--safe);"><span class="ai-dot" style="background:var(--safe);"></span> ADAPTIVE THRESHOLDS</div>
+      <div class="status-pill" id="globalStatusBadge"><span class="ai-dot" style="background:var(--safe);"></span><span id="statusTextGlobal">SYSTEM OPTIMAL</span></div>
+    </div>
+  </header>
+
+  <div class="dashboard-grid">
+    <div class="left-stack">
+      <!-- AI Insight Banner -->
+      <div class="card" id="aiInsightCard" style="background:linear-gradient(105deg, #0b1420, #03070f); border-left:4px solid var(--info);">
+        <div style="display:flex; align-items:center; gap:12px; flex-wrap:wrap; justify-content:space-between;">
+          <div style="display:flex; gap:12px; align-items:center;"><span style="font-size:1.8rem;">🧠</span><div><div style="font-size:0.65rem;letter-spacing:0.2em;">AI TREND FORECAST</div><strong id="aiMsgText">Monitoring telemetry — stable envelope</strong></div></div>
+          <div><span id="aiConfidence" style="font-family:monospace;font-size:0.75rem;background:#00000033;padding:4px 10px;border-radius:40px;">confidence 94%</span></div>
+        </div>
+      </div>
+      <!-- Attack Banner -->
+      <div id="attackBanner" class="attack-alert"><span style="font-size:1.5rem;">🛡️</span><div><strong>DEFENSE MODE ACTIVE</strong><div id="attackMsg" style="font-size:0.7rem;">Traffic anomaly mitigated</div></div></div>
+
+      <!-- Metrics Row: CPU + Network (thermal removed) -->
+      <div class="metrics-grid">
+        <div class="card" id="cpuCardMain"><div class="card-header"><span class="ai-dot" style="background:var(--safe);"></span> CPU CORE</div><div class="metric-digit" id="cpuValueBig">0<span style="font-size:1rem;">%</span></div><div class="progress-bar-bg"><div class="progress-fill" id="cpuFillBar"></div></div><div id="cpuSubtext" style="font-size:0.7rem;color:var(--text-muted);">load avg normal</div></div>
+        <div class="card" id="ramCardMain"><div class="card-header"><span class="ai-dot" style="background:var(--info);"></span> MEMORY</div><div class="metric-digit" id="ramValueBig">0<span style="font-size:1rem;">%</span></div><div class="progress-bar-bg"><div class="progress-fill" id="ramFillBar"></div></div><div id="ramSubtext" style="font-size:0.7rem;color:var(--text-muted);">32GB total</div></div>
+      </div>
+
+      <!-- Enhanced Network Flow Card (replaces thermal) -->
+      <div class="card">
+        <div class="card-header">🌊 NETWORK FLOW ANALYTICS</div>
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px;">
+          <div><div style="font-size:0.7rem;color:var(--text-muted);">⬇ INGRESS</div><div style="font-size:2rem;font-family:monospace;" id="netIngressBig">0<span style="font-size:0.9rem;"> MB/s</span></div><div class="progress-bar-bg"><div class="progress-fill" id="netInBar" style="background:var(--info);"></div></div></div>
+          <div><div style="font-size:0.7rem;color:var(--text-muted);">⬆ EGRESS</div><div style="font-size:2rem;font-family:monospace;" id="netEgressBig">0<span style="font-size:0.9rem;"> MB/s</span></div><div class="progress-bar-bg"><div class="progress-fill" id="netOutBar" style="background:var(--safe);"></div></div></div>
+        </div>
+        <div class="network-stats"><span>📊 PACKET DROP: <span id="packetDrop">0.0</span>%</span><span>🔌 ACTIVE CONNS: <span id="activeConns">342</span></span><span id="trafficSpikeBadge" style="color:var(--crit);display:none;">⚠️ SPIKE DETECTED</span></div>
+      </div>
+
+      <!-- Charts row -->
+      <div class="card"><div class="chart-pair"><div><div class="card-header">📈 CPU HISTORY</div><div class="mini-chart"><canvas id="cpuTrendCanvas"></canvas></div></div><div><div class="card-header">🌐 NETWORK THROUGHPUT</div><div class="mini-chart"><canvas id="netTrendCanvas"></canvas></div></div></div></div>
+
+      <!-- Digital Twin panel (CPU, RAM, NET) -->
+      <div class="card twin-panel"><div class="card-header">🌀 DIGITAL TWIN · PREDICTIVE MIRROR</div><div class="twin-grid" id="twinGrid"></div></div>
+
+      <!-- Self-heal card -->
+      <div class="card"><div class="card-header" style="justify-content:space-between;"><span>🧬 SELF-HEALING ENGINE</span><span id="healStateLabel" style="font-size:0.7rem;color:var(--safe);">STANDBY</span></div><div id="healStepsPanel" style="display:none; background:var(--bg-elevated);border-radius:16px;padding:10px;margin-bottom:12px;"></div><div id="healResultMsg" style="font-size:0.75rem;"></div></div>
+
+      <div class="card"><div class="card-header" style="justify-content:space-between;"><span>📋 EVENT LOG</span><div><button onclick="filterLogUI('all')" id="logFilterAll" style="background:var(--info);border:none;padding:2px 8px;border-radius:20px;font-size:0.6rem;">ALL</button><button onclick="filterLogUI('crit')" id="logFilterCrit" style="background:none;border:none;padding:2px 8px;">CRIT</button><button onclick="clearLogUI()" style="background:none;border:none;">CLEAR</button></div></div><div id="logList" class="log-container"></div></div>
+    </div>
+
+    <!-- RIGHT SIDEBAR -->
+    <div class="controls-card">
+      <div class="card"><div class="section-label">⚡ RESTART CONTROLS</div><div class="btn-group"><button class="btn btn-crit" id="forceRestartBtn">🔁 FORCE RESTART</button><button class="btn btn-warn" id="cancelRestartBtn" disabled>✕ CANCEL</button></div><div class="btn-group" style="margin-top:8px;"><button class="btn btn-info" id="rtSoft">SOFT</button><button class="btn btn-info" id="rtHard" style="border-color:var(--safe);">HARD</button><button class="btn btn-info" id="rtDelay">DELAY</button></div><div class="toggle-row" style="margin-top:12px;"><span>⚙️ AUTO-HEAL / RESTART</span><label><input type="checkbox" id="autoHealToggle" checked><span style="margin-left:8px;">✔️</span></label></div></div>
+
+      <div class="card"><div class="section-label">🎮 DEMO SCENARIOS</div><div class="btn-group"><button class="btn btn-crit" id="demoOverloadBtn">💥 OVERLOAD</button><button class="btn btn-warn" id="demoAttackBtn">🚨 DDoS ATTACK</button></div><div class="btn-group"><button class="btn btn-safe" id="demoRecoverBtn">✅ RECOVER</button><button class="btn btn-info" id="demoHealBtn">🧬 TEST HEAL</button></div></div>
+
+      <div class="card"><div class="section-label">🛡️ SYSTEM HEALTH</div><div class="health-ring"><div class="ring-wrapper"><svg width="100" height="100" viewBox="0 0 100 100"><circle cx="50" cy="50" r="42" fill="none" stroke="#1e2a3a" stroke-width="6"/><circle id="healthRingSvg" cx="50" cy="50" r="42" fill="none" stroke="var(--safe)" stroke-width="6" stroke-dasharray="264" stroke-dashoffset="0" stroke-linecap="round" transform="rotate(-90 50 50)"/></svg><div class="ring-score"><span id="healthScoreSpan">100</span><span style="font-size:0.65rem;">pts</span></div></div></div><div style="text-align:center; margin-top:8px;"><span id="healthGradeSpan" style="font-weight:bold;">EXCELLENT</span></div></div>
+
+      <div class="card"><div class="section-label">⚙️ ADAPTIVE LIMITS</div><div style="display:flex; justify-content:space-between;"><span>CPU warn/crit</span><span><span id="threshCpuWarnDisplay">75</span>% / <span id="threshCpuCritDisplay">90</span>%</span></div><div style="display:flex; justify-content:space-between;"><span>RAM warn/crit</span><span><span id="threshRamWarnDisplay">75</span>% / <span id="threshRamCritDisplay">90</span>%</span></div><div class="section-label" style="margin-top:12px;">📊 RISK METER</div><div>CPU risk <span id="riskCpuNum">0</span>%</div><div class="progress-bar-bg"><div id="riskCpuBarFill" style="height:4px; width:0%; background:var(--crit);"></div></div><div>RAM risk <span id="riskRamNum">0</span>%</div><div class="progress-bar-bg"><div id="riskRamBarFill" style="height:4px; width:0%; background:var(--warn);"></div></div><div style="margin-top:8px;">Network Anomaly Score</div><div class="progress-bar-bg"><div id="netRiskFill" style="height:4px; width:0%; background:var(--info);"></div></div></div>
+    </div>
+  </div>
+  <footer><span>SH/OS v3 · Autonomous healing fabric</span><span>Uptime: <span id="uptimeSpan">0s</span> · restarts: <span id="restartCountSpan">0</span></span></footer>
+</div>
+
+<script>
+  let sys = {
+    cpu: 32, ram: 41, netIn: 14, netOut: 7, status: 'safe', cpuHighSince: null,
+    restarting: false, restartCount: 0, uptimeStart: Date.now(), autoHeal: true,
+    restartType: 'hard', incidentCount: 0, defenseMode: false, healingActive: false, overloadDemo: false, attackDemo: false,
+    thresholds: { cpuWarn: 75, cpuCrit: 90, ramWarn: 75, ramCrit: 90 },
+    logEntries: [], logFilter: 'all'
+  };
+  let historyStore = { cpu: [], ram: [], net: [], maxLen: 20 };
+  let tickCounter = 0;
+
+  function pushHistory(key, val) { historyStore[key].push(val); if(historyStore[key].length > historyStore.maxLen) historyStore[key].shift(); }
+  function slope(arr) { if(arr.length<3) return 0; let n=arr.length, sumX=0,sumY=0,sumXY=0,sumXX=0; for(let i=0;i<n;i++){ sumX+=i; sumY+=arr[i]; sumXY+=i*arr[i]; sumXX+=i*i; } return (n*sumXY - sumX*sumY)/(n*sumXX - sumX*sumX); }
+  function predict(key, steps=20) { let arr = historyStore[key]; if(arr.length<3) return arr[arr.length-1]||0; return Math.min(100, Math.max(0, arr[arr.length-1] + slope(arr)*steps)); }
+  function rand(min,max){ return min+Math.random()*(max-min); }
+  
+  function addLog(type, msg) { 
+    const container = document.getElementById('logList'); 
+    const entry = document.createElement('div'); 
+    entry.className = 'log-entry'; 
+    entry.dataset.type=type; 
+    entry.innerHTML = `<span style="color:#6a8eaa;">${new Date().toLocaleTimeString()}</span><span style="color:${type==='crit'?'#ff4d6d':type==='warn'?'#ffcd4a':'#00f5a0'}">${type.toUpperCase()}</span><span>${msg}</span>`; 
+    container.prepend(entry); 
+    sys.logEntries.unshift({type,msg}); 
+    if(container.children.length>50) container.removeChild(container.lastChild); 
+    if(sys.logFilter!=='all' && type!==sys.logFilter) entry.style.display='none'; 
+  }
+  function showToast(type, title, msg) { let root=document.getElementById('toastRoot'); let t=document.createElement('div'); t.className='toast'; t.style.borderLeftColor=type==='crit'?'#ff4d6d':type==='warn'?'#ffcd4a':'#00f5a0'; t.innerHTML=`<strong>${title}</strong><div style="font-size:0.7rem;">${msg}</div>`; root.appendChild(t); setTimeout(()=>t.remove(),4000); }
+  function setStatusUI(s) { let badge=document.getElementById('globalStatusBadge'); let txt=document.getElementById('statusTextGlobal'); if(s==='safe'){ txt.innerText='SYSTEM OPTIMAL'; badge.style.borderColor='var(--safe)'; } else if(s==='warning'){ txt.innerText='WARNING'; badge.style.borderColor='var(--warn)'; } else { txt.innerText='CRITICAL'; badge.style.borderColor='var(--crit)'; } sys.status=s; }
+  
+  function updateMetricsUI(){
+    let cpuInt=Math.round(sys.cpu), ramInt=Math.round(sys.ram);
+    document.getElementById('cpuValueBig').innerHTML=cpuInt+'<span style="font-size:1rem;">%</span>';
+    document.getElementById('ramValueBig').innerHTML=ramInt+'<span style="font-size:1rem;">%</span>';
+    document.getElementById('cpuFillBar').style.width=Math.min(100, sys.cpu)+'%';
+    document.getElementById('ramFillBar').style.width=Math.min(100, sys.ram)+'%';
+    let cpuClr=sys.cpu>sys.thresholds.cpuCrit?'#ff4d6d':sys.cpu>sys.thresholds.cpuWarn?'#ffcd4a':'#00f5a0';
+    document.getElementById('cpuFillBar').style.background=cpuClr;
+    document.getElementById('netIngressBig').innerHTML=sys.netIn.toFixed(1)+'<span style="font-size:0.9rem;"> MB/s</span>';
+    document.getElementById('netEgressBig').innerHTML=sys.netOut.toFixed(1)+'<span style="font-size:0.9rem;"> MB/s</span>';
+    let inPercent = Math.min(100, (sys.netIn/500)*100);
+    let outPercent = Math.min(100, (sys.netOut/200)*100);
+    document.getElementById('netInBar').style.width=inPercent+'%';
+    document.getElementById('netOutBar').style.width=outPercent+'%';
+    let packetLoss = sys.netIn > 180 ? (Math.random()*1.2+0.3).toFixed(1) : (Math.random()*0.2).toFixed(1);
+    document.getElementById('packetDrop').innerText = packetLoss;
+    document.getElementById('activeConns').innerText = Math.floor(200 + sys.netIn*2.5);
+    let attackNow = sys.netIn > 180;
+    document.getElementById('trafficSpikeBadge').style.display = attackNow ? 'inline' : 'none';
+    if(attackNow && !sys.defenseMode){ setDefenseModeUI(true); addLog('crit','🚨 Traffic anomaly detected — defense active'); showToast('crit','Attack','DDoS-like pattern'); } 
+    else if(!attackNow && sys.defenseMode) setDefenseModeUI(false);
+  }
+
+  function setDefenseModeUI(on){ sys.defenseMode=on; let banner=document.getElementById('attackBanner'); if(on) banner.classList.add('active'); else banner.classList.remove('active'); }
+  function updateHealthRing(score){ let circumference=264; let offset=circumference*(1-score/100); let ring=document.getElementById('healthRingSvg'); ring.style.strokeDashoffset=offset; let color=score<40?'#ff4d6d':score<70?'#ffcd4a':'#00f5a0'; ring.style.stroke=color; document.getElementById('healthScoreSpan').innerText=Math.floor(score); document.getElementById('healthGradeSpan').innerText=score>=85?'EXCELLENT':score>=60?'GOOD':'DEGRADED'; }
+  
+  function updateTwinPanel(){ 
+    let predCpu=predict('cpu',25), predRam=predict('ram',25), predNet=predict('net',25); 
+    let grid=document.getElementById('twinGrid'); 
+    grid.innerHTML=[
+      {label:'CPU',now:Math.round(sys.cpu),pred:Math.round(predCpu),unit:'%'},
+      {label:'RAM',now:Math.round(sys.ram),pred:Math.round(predRam),unit:'%'},
+      {label:'NET IN',now:sys.netIn.toFixed(0),pred:predNet.toFixed(0),unit:'MB/s'}
+    ].map(m=>`<div class="twin-metric-card"><div style="font-size:0.6rem;">${m.label}</div><div style="font-size:1rem;">${m.now}<span style="font-size:0.6rem;">${m.unit}</span></div><div style="font-size:0.7rem;color:${m.pred>80?'#ff4d6d':'#b26eff'}">→ ${m.pred} ${m.unit}</div></div>`).join('');
+  }
+  
+  function triggerRestart(overrideType){ 
+    if(sys.restarting) return; sys.restarting=true; sys.incidentCount++; 
+    let rType=overrideType||sys.restartType; addLog('crit',`${rType.toUpperCase()} restart triggered`); showToast('crit','RESTART',`${rType} reboot in 5s`); 
+    let overlayDiv=document.createElement('div'); overlayDiv.id='restartOverlay'; overlayDiv.style.cssText='position:fixed;inset:0;background:#03070fe0;backdrop-filter:blur(12px);z-index:2000;display:flex;align-items:center;justify-content:center;'; 
+    overlayDiv.innerHTML=`<div style="background:#0f1822;padding:32px;border-radius:32px;text-align:center;border:1px solid #ff4d6d;"><div style="font-size:2rem;">⚠️</div><div style="font-family:monospace;">${rType.toUpperCase()} RESTART</div><div id="cdText">5</div><button id="cancelOverlayBtn" style="margin-top:16px;">CANCEL</button></div>`; 
+    document.body.appendChild(overlayDiv); let cnt=5; let interval=setInterval(()=>{ cnt--; let cdDiv=document.getElementById('cdText'); if(cdDiv) cdDiv.innerText=cnt; if(cnt<=0){ clearInterval(interval); document.body.removeChild(overlayDiv); sys.restarting=false; sys.restartCount++; document.getElementById('restartCountSpan').innerText=sys.restartCount; sys.cpu=rand(12,28); sys.ram=rand(22,38); sys.netIn=rand(5,15); sys.netOut=rand(4,12); sys.overloadDemo=false; sys.attackDemo=false; setStatusUI('safe'); setDefenseModeUI(false); addLog('info','System restart completed'); showToast('safe','Reboot','All systems nominal'); sys.uptimeStart=Date.now(); } },1000); 
+    document.getElementById('cancelOverlayBtn')?.addEventListener('click',()=>{ clearInterval(interval); if(overlayDiv) overlayDiv.remove(); sys.restarting=false; addLog('warn','Restart cancelled'); }); 
+  }
+  
+  function startSelfHeal(){ 
+    if(sys.healingActive || sys.restarting) return; sys.healingActive=true; document.getElementById('healStateLabel').innerHTML='HEALING'; document.getElementById('healStateLabel').style.color='var(--warn)'; 
+    let stepsDiv=document.getElementById('healStepsPanel'); stepsDiv.style.display='block'; stepsDiv.innerHTML='<div>🧹 terminating rogue processes</div><div>⚡ throttling CPU hogs</div><div>🌀 resetting network buffers</div>'; 
+    let interval=setInterval(()=>{ sys.cpu=Math.max(sys.cpu-rand(8,15), 18); sys.ram=Math.max(sys.ram-rand(5,10), 28); sys.netIn=Math.max(sys.netIn-rand(15,40), 12); if(sys.cpu<sys.thresholds.cpuCrit && sys.ram<sys.thresholds.ramCrit){ clearInterval(interval); sys.healingActive=false; document.getElementById('healStateLabel').innerHTML='RECOVERED'; document.getElementById('healStateLabel').style.color='var(--safe)'; document.getElementById('healResultMsg').innerHTML='✅ Self-healing succeeded'; addLog('safe','Self-heal stabilized system'); } else if(sys.cpu>sys.thresholds.cpuCrit+5){ clearInterval(interval); sys.healingActive=false; document.getElementById('healStateLabel').innerHTML='FAILED'; addLog('crit','Self-heal failed'); if(sys.autoHeal) triggerRestart(); } },800); setTimeout(()=>{ if(interval) clearInterval(interval); },5000); 
+  }
+  
+  function updateAIBanner(){ 
+    let predCpu=predict('cpu',20), predNet=predict('net',20); let msg=document.getElementById('aiMsgText'); let confSpan=document.getElementById('aiConfidence'); 
+    if(predCpu>sys.thresholds.cpuCrit){ msg.innerText=`⚠️ CPU overload predicted → ${predCpu.toFixed(0)}% in ~30s`; confSpan.innerText='urgency high'; } 
+    else if(predCpu>sys.thresholds.cpuWarn){ msg.innerText=`⚡ Load rising — CPU ${predCpu.toFixed(0)}%`; confSpan.innerText='moderate risk'; } 
+    else if(predNet>120){ msg.innerText=`🌊 Network surge expected — ingress ${predNet.toFixed(0)} MB/s`; confSpan.innerText='anomaly watch'; } 
+    else { msg.innerText=`Telemetry stable — predictive envelope normal`; confSpan.innerText='confidence 96%'; } 
+  }
+  
+  function updateAdaptiveThresholds(){ 
+    if(historyStore.cpu.length<8) return; let avgCpu=historyStore.cpu.reduce((a,b)=>a+b,0)/historyStore.cpu.length; let newWarn=Math.min(88, Math.max(60, avgCpu+14)); let newCrit=Math.min(96, Math.max(75, avgCpu+26)); sys.thresholds.cpuWarn=Math.round(newWarn); sys.thresholds.cpuCrit=Math.round(newCrit); document.getElementById('threshCpuWarnDisplay').innerText=sys.thresholds.cpuWarn; document.getElementById('threshCpuCritDisplay').innerText=sys.thresholds.cpuCrit; }
+  
+  function tickSim(){ 
+    if(sys.restarting) return; tickCounter++; let uptimeSec=Math.floor((Date.now()-sys.uptimeStart)/1000); document.getElementById('uptimeSpan').innerText=uptimeSec<60?uptimeSec+'s':Math.floor(uptimeSec/60)+'m'; 
+    if(!sys.healingActive){ let targetCpu=sys.overloadDemo?rand(87,96):rand(18,74); sys.cpu=sys.cpu*0.85+targetCpu*0.15+(Math.random()-0.5)*3; sys.cpu=Math.min(99,Math.max(5,sys.cpu)); sys.ram=sys.attackDemo?rand(65,88):rand(24,68); sys.netIn=sys.attackDemo?rand(220,480):rand(5,48); sys.netOut=rand(4,42); } 
+    pushHistory('cpu',sys.cpu); pushHistory('ram',sys.ram); pushHistory('net',sys.netIn); updateMetricsUI(); 
+    let riskCpu=Math.min(100, (sys.cpu/95)**2*100); let riskRam=Math.min(100, (sys.ram/90)**2*100); let netRisk=Math.min(100, (sys.netIn/450)*100); document.getElementById('riskCpuNum').innerText=Math.floor(riskCpu); document.getElementById('riskRamNum').innerText=Math.floor(riskRam); document.getElementById('riskCpuBarFill').style.width=riskCpu+'%'; document.getElementById('riskRamBarFill').style.width=riskRam+'%'; document.getElementById('netRiskFill').style.width=netRisk+'%'; 
+    let health=Math.max(0,100-(sys.cpu*0.55+sys.ram*0.35+(sys.netIn/500)*15)); updateHealthRing(health); 
+    let cpuCritFlag=sys.cpu>sys.thresholds.cpuCrit; if(cpuCritFlag && sys.status!=='critical'){ setStatusUI('critical'); addLog('crit',`CPU ${sys.cpu.toFixed(0)}% breached limit`); if(sys.autoHeal && !sys.healingActive) setTimeout(startSelfHeal,400); } else if(sys.cpu<sys.thresholds.cpuWarn-5 && sys.ram<sys.thresholds.ramWarn-5 && sys.status==='warning') setStatusUI('safe'); else if(sys.cpu>sys.thresholds.cpuWarn && sys.status==='safe'){ setStatusUI('warning'); addLog('warn','High CPU sustained'); } 
+    updateTwinPanel(); updateAIBanner(); if(tickCounter%12===0) updateAdaptiveThresholds(); 
+    if(window.cpuChartObj && historyStore.cpu.length){ window.cpuChartObj.data.datasets[0].data=historyStore.cpu.slice(-30); window.cpuChartObj.update('none'); } 
+    if(window.netChartObj && historyStore.net.length){ window.netChartObj.data.datasets[0].data=historyStore.net.slice(-30); window.netChartObj.update('none'); } 
+  }
+  
+  function initCharts(){ 
+    let cpuCanvas=document.getElementById('cpuTrendCanvas'); let netCanvas=document.getElementById('netTrendCanvas'); 
+    if(cpuCanvas){ window.cpuChartObj=new Chart(cpuCanvas,{type:'line',data:{labels:Array(30).fill(''),datasets:[{data:Array(30).fill(30),borderColor:'#00f5a0',borderWidth:2,pointRadius:0,fill:true,backgroundColor:'rgba(0,245,160,0.05)',tension:0.3}]},options:{responsive:true,maintainAspectRatio:true,plugins:{legend:{display:false}},scales:{x:{display:false},y:{min:0,max:100,grid:{color:'#1e2a3a'}}}}}); } 
+    if(netCanvas){ window.netChartObj=new Chart(netCanvas,{type:'line',data:{labels:Array(30).fill(''),datasets:[{data:Array(30).fill(12),borderColor:'#2b9eff',borderWidth:2,fill:true,backgroundColor:'rgba(43,158,255,0.05)',pointRadius:0}]},options:{responsive:true,plugins:{legend:{display:false}},scales:{x:{display:false},y:{min:0,grid:{color:'#1e2a3a'}}}}}); } 
+  }
+  
+  function filterLogUI(f){ sys.logFilter=f; document.querySelectorAll('.log-entry').forEach(el=>{ let type=el.children[1]?.innerText.toLowerCase(); if(f==='all' || type===f) el.style.display='flex'; else el.style.display='none'; }); document.getElementById('logFilterAll').style.background=f==='all'?'#2b9eff':'none'; document.getElementById('logFilterCrit').style.background=f==='crit'?'#ff4d6d':'none'; }
+  function clearLogUI(){ document.getElementById('logList').innerHTML=''; sys.logEntries=[]; }
+  
+  window.addEventListener('load',()=>{ initCharts(); setInterval(tickSim,1300); addLog('info','SH/OS v3 initialized — thermal removed, network enhanced'); addLog('safe','Adaptive thresholds & twin predictor active'); document.getElementById('forceRestartBtn').onclick=()=>triggerRestart(); document.getElementById('autoHealToggle').onchange=e=>sys.autoHeal=e.target.checked; document.getElementById('rtSoft').onclick=()=>{ sys.restartType='soft'; addLog('info','Restart mode: SOFT'); }; document.getElementById('rtHard').onclick=()=>{ sys.restartType='hard'; addLog('info','Restart mode: HARD'); }; document.getElementById('rtDelay').onclick=()=>{ sys.restartType='delayed'; addLog('info','Restart mode: DELAYED'); }; document.getElementById('demoOverloadBtn').onclick=()=>{ sys.overloadDemo=true; sys.cpu=rand(87,96); sys.ram=rand(82,92); addLog('warn','Demo: overload simulation'); }; document.getElementById('demoAttackBtn').onclick=()=>{ sys.attackDemo=true; sys.netIn=rand(320,500); addLog('crit','Demo: DDoS attack simulation'); setDefenseModeUI(true); }; document.getElementById('demoRecoverBtn').onclick=()=>{ sys.overloadDemo=false; sys.attackDemo=false; sys.cpu=rand(20,40); sys.ram=rand(30,45); sys.netIn=rand(6,25); setDefenseModeUI(false); setStatusUI('safe'); addLog('safe','Demo: full recovery'); }; document.getElementById('demoHealBtn').onclick=()=>{ if(!sys.healingActive && !sys.restarting){ sys.cpu=rand(85,92); sys.ram=rand(80,88); startSelfHeal(); } }; tickSim(); });
+</script>
+</body>
+</html>
