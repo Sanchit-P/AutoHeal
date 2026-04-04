@@ -133,6 +133,48 @@ def _fallback_rca(metrics: Dict[str, Any]) -> Dict[str, Any]:
 
 
 def _build_rca_prompt(metrics: Dict[str, Any], logs: List[Dict[str, Any]]) -> str:
+    examples = [
+        {
+            "metrics": {"cpu": 92, "memory": 65, "network": 420},
+            "recent_healing_logs": [],
+            "expected_json": {
+                "reasons": ["CPU and network are both high, consistent with external traffic surge."],
+                "likely_cause": "DDoS_Pattern",
+                "confidence": 85,
+                "remediation_suggestions": ["Throttle traffic", "Tighten WAF", "Enable rate limits"]
+            }
+        },
+        {
+            "metrics": {"cpu": 88, "memory": 91, "network": 60},
+            "recent_healing_logs": [],
+            "expected_json": {
+                "reasons": ["Sustained high memory indicates potential leak or unbounded cache growth."],
+                "likely_cause": "Memory_Leak",
+                "confidence": 80,
+                "remediation_suggestions": ["Restart/roll pods", "Add memory limits", "Investigate heap profiles"]
+            }
+        },
+        {
+            "metrics": {"cpu": 90, "memory": 60, "network": 70},
+            "recent_healing_logs": [],
+            "expected_json": {
+                "reasons": ["High CPU without proportional network suggests internal overload or a hot path."],
+                "likely_cause": "Internal_Overload",
+                "confidence": 75,
+                "remediation_suggestions": ["Rolling restart", "Profile hotspots", "Scale replicas"]
+            }
+        },
+        {
+            "metrics": {"cpu": 5, "memory": 30, "network": 5},
+            "recent_healing_logs": [],
+            "expected_json": {
+                "reasons": ["Low CPU and network indicate the service may be down or hung."],
+                "likely_cause": "Service_Down",
+                "confidence": 70,
+                "remediation_suggestions": ["Restart service", "Check liveness/readiness probes", "Inspect recent deploys or crashes"]
+            }
+        }
+    ]
     context = {
         "metrics": metrics,
         "recent_healing_logs": logs[:10],
@@ -141,7 +183,9 @@ def _build_rca_prompt(metrics: Dict[str, Any], logs: List[Dict[str, Any]]) -> st
             "Explain the likely root cause of the current server failure/anomaly.",
             "Use only the provided metrics and recent healing logs.",
             "Return strict JSON only with: reasons[], likely_cause, confidence(0-100), remediation_suggestions[].",
+            "MUST NOT include extra keys. confidence must be a number between 0 and 100.",
         ],
+        "few_shot_examples": examples,
     }
     return json.dumps(context, indent=2)
 
@@ -150,7 +194,7 @@ def suggest_root_cause(
     metrics: Dict[str, Any],
     logs: Optional[List[Dict[str, Any]]] = None,
     model: str = DEFAULT_MODEL,
-    temperature: float = 0.2,
+    temperature: float = 0.1,
     timeout: float = 6.0,
     max_attempts: Optional[int] = None,
 ) -> Dict[str, Any]:
