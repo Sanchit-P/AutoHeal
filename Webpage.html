@@ -5,7 +5,31 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
   <title>SH/OS v3 — Sentient Self-Healing Core</title>
   <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js">
+    async function loadMetrics() {
+  try {
+    const res = await fetch("http://localhost:8000/metrics"); // backend API
+    const data = await res.json();
+
+    // DEBUG: see backend data in console
+    console.log("Backend Data:", data);
+
+    // Update UI (change keys based on your backend response)
+    document.getElementById("cpu").innerText = data.cpu || data.cpu_usage || "N/A";
+    document.getElementById("memory").innerText = data.memory || data.ram_usage || "N/A";
+    document.getElementById("status").innerText = data.status || data.attack || "Normal";
+
+  } catch (err) {
+    console.error("Error fetching data:", err);
+  }
+}
+
+// Run once when page loads
+loadMetrics();
+
+// Auto refresh every 2 seconds (real-time effect)
+setInterval(loadMetrics, 2000);
+  </script>
   <style>
     * {
       margin: 0;
@@ -375,6 +399,11 @@
   </style>
 </head>
 <body>
+  <h2>System Metrics</h2>
+
+<p>CPU: <span id="cpu">Loading...</span></p>
+<p>Memory: <span id="memory">Loading...</span></p>
+<p>Status: <span id="status">Loading...</span></p>
 <div class="grid-bg"></div>
 <div class="toast-stack" id="toastRoot"></div>
 <div class="shell">
