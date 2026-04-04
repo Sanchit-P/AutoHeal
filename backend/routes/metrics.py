@@ -8,6 +8,7 @@ import json
 import time
 from typing import Dict, Any
 from engine.predict import MetricHistory, summarize_forecast
+import os
 
 router = APIRouter()
 
@@ -21,9 +22,13 @@ _HISTORIES = {
     "network": MetricHistory(maxlen=180),
 }
 
-# Soft thresholds for proactive alerts (percent / mbps-style scale)
-_THRESHOLDS = {"cpu": 80.0, "memory": 80.0, "network": 400.0}
-_HORIZON_S = 300.0  # 5 minutes
+# Soft thresholds for proactive alerts (percent / mbps-style scale), env-configurable
+_THRESHOLDS = {
+    "cpu": float(os.environ.get("FORECAST_CPU_THRESHOLD", "80")),
+    "memory": float(os.environ.get("FORECAST_MEMORY_THRESHOLD", "80")),
+    "network": float(os.environ.get("FORECAST_NETWORK_THRESHOLD", "400")),
+}
+_HORIZON_S = float(os.environ.get("FORECAST_HORIZON_SECONDS", "300"))  # default 5 minutes
 
 @router.post("/metrics/ingest")
 async def ingest_metrics(data: dict):
