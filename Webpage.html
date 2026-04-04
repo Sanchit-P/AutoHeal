@@ -627,6 +627,7 @@ setInterval(loadMetrics, 2000);
   function filterLogUI(f){ sys.logFilter=f; document.querySelectorAll('.log-entry').forEach(el=>{ let type=el.children[1]?.innerText.toLowerCase(); if(f==='all' || type===f) el.style.display='flex'; else el.style.display='none'; }); document.getElementById('logFilterAll').style.background=f==='all'?'#2b9eff':'none'; document.getElementById('logFilterCrit').style.background=f==='crit'?'#ff4d6d':'none'; }
   function clearLogUI(){ document.getElementById('logList').innerHTML=''; sys.logEntries=[]; }
   
+<<<<<<< HEAD
   window.addEventListener('load',()=>{
     initCharts();
     setInterval(tickSim,1300);
@@ -667,6 +668,9 @@ setInterval(loadMetrics, 2000);
     };
     tickSim();
   });
+=======
+  window.addEventListener('load',()=>{ initCharts(); setInterval(tickSim,1300); addLog('info','AUTO HEAL initialized — thermal removed, network enhanced'); addLog('safe','Adaptive thresholds & twin predictor active'); document.getElementById('forceRestartBtn').onclick=()=>triggerRestart(); document.getElementById('autoHealToggle').onchange=e=>sys.autoHeal=e.target.checked; document.getElementById('rtSoft').onclick=()=>{ sys.restartType='soft'; addLog('info','Restart mode: SOFT'); }; document.getElementById('rtHard').onclick=()=>{ sys.restartType='hard'; addLog('info','Restart mode: HARD'); }; document.getElementById('rtDelay').onclick=()=>{ sys.restartType='delayed'; addLog('info','Restart mode: DELAYED'); }; document.getElementById('demoOverloadBtn').onclick=()=>{ sys.overloadDemo=true; sys.cpu=rand(87,96); sys.ram=rand(82,92); addLog('warn','Demo: overload simulation'); }; document.getElementById('demoAttackBtn').onclick=()=>{ sys.attackDemo=true; sys.netIn=rand(320,500); addLog('crit','Demo: DDoS attack simulation'); setDefenseModeUI(true); }; document.getElementById('demoRecoverBtn').onclick=()=>{ sys.overloadDemo=false; sys.attackDemo=false; sys.cpu=rand(20,40); sys.ram=rand(30,45); sys.netIn=rand(6,25); setDefenseModeUI(false); setStatusUI('safe'); addLog('safe','Demo: full recovery'); }; document.getElementById('demoHealBtn').onclick=()=>{ if(!sys.healingActive && !sys.restarting){ sys.cpu=rand(85,92); sys.ram=rand(80,88); startSelfHeal(); } }; tickSim(); });
+>>>>>>> b7663c201bda8ed58d8543149e106f082923daa9
 </script>
 </body>
 </html>
