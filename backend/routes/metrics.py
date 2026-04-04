@@ -13,10 +13,15 @@ latest_metrics = {"cpu": 30.0, "memory": 40.0, "network": 50.0}
 @router.post("/metrics/ingest")
 async def ingest_metrics(data: dict):
     global latest_metrics
-    latest_metrics = data
+    # Normalize incoming metrics to native Python floats
+    cpu = float(data["cpu"])
+    memory = float(data["memory"])
+    network = float(data["network"])
+    latest_metrics = {"cpu": cpu, "memory": memory, "network": network}
     
-    cpu, memory, network = data["cpu"], data["memory"], data["network"]
     is_anomaly, confidence = detect_anomaly(cpu, memory, network)
+    is_anomaly = bool(is_anomaly)
+    confidence = float(confidence)
     
     healing_action, anomaly_type = "no_action", "none"
     if is_anomaly:
@@ -35,7 +40,9 @@ async def ingest_metrics(data: dict):
         })
     
     return {
-        "cpu": cpu, "memory": memory, "network": network,
+        "cpu": cpu,
+        "memory": memory,
+        "network": network,
         "is_anomaly": is_anomaly,
         "confidence": confidence,
         "healing_action": healing_action,
