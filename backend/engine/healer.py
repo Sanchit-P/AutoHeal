@@ -1,14 +1,18 @@
+import os
+
 # Causal Logic:
 # High CPU + High Network  → DDoS Pattern  → Throttle Traffic
 # High CPU + Normal Network → Internal Bug → Rolling Restart
 # High Memory + Any        → Memory Leak   → Scale Up / Pod Restart
 # Low CPU + Low Network    → Service Down  → Restart Service
 
+_MIN_CONFIDENCE = float(os.environ.get("HEALING_MIN_CONFIDENCE", "85"))
+
 def determine_healing(cpu: float, memory: float, network: float, confidence: float):
     action = "no_action"
     anomaly_type = "none"
     
-    if confidence < 95:
+    if confidence < _MIN_CONFIDENCE:
         return action, anomaly_type  # Confidence guardrail
     
     if cpu > 75 and network > 80:
