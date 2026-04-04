@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-  <title>SH/OS v3 — Sentient Self-Healing Core</title>
+  <title>AUTO HEAL</title>
   <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js">
     async function loadMetrics() {
@@ -410,7 +410,7 @@ setInterval(loadMetrics, 2000);
   <header>
     <div class="brand">
       <div class="brand-logo"><svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg></div>
-      <div><div class="brand-title">SH/OS v3</div><div class="brand-sub">SENTIENT HEALING CORE</div></div>
+      <div><div class="brand-title">AUTO HEAL</div><div class="brand-sub">SENTIENT HEALING CORE</div></div>
     </div>
     <div class="header-badges">
       <div class="ai-chip"><span class="ai-dot"></span> NEURAL PREDICTOR</div>
@@ -470,10 +470,14 @@ setInterval(loadMetrics, 2000);
       <div class="card"><div class="section-label">⚙️ ADAPTIVE LIMITS</div><div style="display:flex; justify-content:space-between;"><span>CPU warn/crit</span><span><span id="threshCpuWarnDisplay">75</span>% / <span id="threshCpuCritDisplay">90</span>%</span></div><div style="display:flex; justify-content:space-between;"><span>RAM warn/crit</span><span><span id="threshRamWarnDisplay">75</span>% / <span id="threshRamCritDisplay">90</span>%</span></div><div class="section-label" style="margin-top:12px;">📊 RISK METER</div><div>CPU risk <span id="riskCpuNum">0</span>%</div><div class="progress-bar-bg"><div id="riskCpuBarFill" style="height:4px; width:0%; background:var(--crit);"></div></div><div>RAM risk <span id="riskRamNum">0</span>%</div><div class="progress-bar-bg"><div id="riskRamBarFill" style="height:4px; width:0%; background:var(--warn);"></div></div><div style="margin-top:8px;">Network Anomaly Score</div><div class="progress-bar-bg"><div id="netRiskFill" style="height:4px; width:0%; background:var(--info);"></div></div></div>
     </div>
   </div>
-  <footer><span>SH/OS v3 · Autonomous healing fabric</span><span>Uptime: <span id="uptimeSpan">0s</span> · restarts: <span id="restartCountSpan">0</span></span></footer>
+  <footer><span>AUTO HEAL · Autonomous healing fabric</span><span>Uptime: <span id="uptimeSpan">0s</span> · restarts: <span id="restartCountSpan">0</span></span></footer>
 </div>
 
 <script>
+  const API_BASE = "http://127.0.0.1:8000";
+  let useBackend = true; // set true to drive UI from backend instead of local sim
+  let lastForecast = null;
+
   let sys = {
     cpu: 32, ram: 41, netIn: 14, netOut: 7, status: 'safe', cpuHighSince: null,
     restarting: false, restartCount: 0, uptimeStart: Date.now(), autoHeal: true,
@@ -529,6 +533,38 @@ setInterval(loadMetrics, 2000);
   function setDefenseModeUI(on){ sys.defenseMode=on; let banner=document.getElementById('attackBanner'); if(on) banner.classList.add('active'); else banner.classList.remove('active'); }
   function updateHealthRing(score){ let circumference=264; let offset=circumference*(1-score/100); let ring=document.getElementById('healthRingSvg'); ring.style.strokeDashoffset=offset; let color=score<40?'#ff4d6d':score<70?'#ffcd4a':'#00f5a0'; ring.style.stroke=color; document.getElementById('healthScoreSpan').innerText=Math.floor(score); document.getElementById('healthGradeSpan').innerText=score>=85?'EXCELLENT':score>=60?'GOOD':'DEGRADED'; }
   
+  async function pollBackend(){
+    try {
+      const [latest, forecast, logs] = await Promise.all([
+        fetch(`${API_BASE}/metrics/latest`).then(r=>r.json()),
+        fetch(`${API_BASE}/metrics/forecast`).then(r=>r.json()),
+        fetch(`${API_BASE}/healinglog`).then(r=>r.json()).catch(()=>[])
+      ]);
+      // Map backend to UI state
+      if (typeof latest.cpu === 'number') sys.cpu = latest.cpu;
+      if (typeof latest.memory === 'number') sys.ram = latest.memory;
+      if (typeof latest.network === 'number') sys.netIn = latest.network;
+      lastForecast = forecast;
+      // Simple defense banner: show if any risk is high
+      const memHigh = forecast?.memory?.risk === 'high';
+      const netHigh = forecast?.network?.risk === 'high';
+      setDefenseModeUI(Boolean(memHigh || netHigh));
+      // Render logs (latest 10)
+      if (Array.isArray(logs)) {
+        document.getElementById('logList').innerHTML = '';
+        logs.slice(0,10).forEach(l => {
+          addLog(l.dry_run ? 'warn' : 'crit', `${l.anomaly_type} → ${l.healing_action} (c=${l.confidence})`);
+        });
+      }
+      // Update UI
+      pushHistory('cpu', sys.cpu); pushHistory('ram', sys.ram); pushHistory('net', sys.netIn);
+      updateMetricsUI(); updateTwinPanel(); updateAIBanner();
+    } catch (e) {
+      // If backend unavailable, fall back to sim mode
+      // console.warn('Backend poll failed', e);
+    }
+  }
+
   function updateTwinPanel(){ 
     let predCpu=predict('cpu',25), predRam=predict('ram',25), predNet=predict('net',25); 
     let grid=document.getElementById('twinGrid'); 
@@ -567,8 +603,13 @@ setInterval(loadMetrics, 2000);
   
   function tickSim(){ 
     if(sys.restarting) return; tickCounter++; let uptimeSec=Math.floor((Date.now()-sys.uptimeStart)/1000); document.getElementById('uptimeSpan').innerText=uptimeSec<60?uptimeSec+'s':Math.floor(uptimeSec/60)+'m'; 
-    if(!sys.healingActive){ let targetCpu=sys.overloadDemo?rand(87,96):rand(18,74); sys.cpu=sys.cpu*0.85+targetCpu*0.15+(Math.random()-0.5)*3; sys.cpu=Math.min(99,Math.max(5,sys.cpu)); sys.ram=sys.attackDemo?rand(65,88):rand(24,68); sys.netIn=sys.attackDemo?rand(220,480):rand(5,48); sys.netOut=rand(4,42); } 
-    pushHistory('cpu',sys.cpu); pushHistory('ram',sys.ram); pushHistory('net',sys.netIn); updateMetricsUI(); 
+    if(useBackend){
+      // Drive UI purely from backend; background poll updates sys.*
+      updateMetricsUI();
+    } else {
+      if(!sys.healingActive){ let targetCpu=sys.overloadDemo?rand(87,96):rand(18,74); sys.cpu=sys.cpu*0.85+targetCpu*0.15+(Math.random()-0.5)*3; sys.cpu=Math.min(99,Math.max(5,sys.cpu)); sys.ram=sys.attackDemo?rand(65,88):rand(24,68); sys.netIn=sys.attackDemo?rand(220,480):rand(5,48); sys.netOut=rand(4,42); } 
+      pushHistory('cpu',sys.cpu); pushHistory('ram',sys.ram); pushHistory('net',sys.netIn); updateMetricsUI(); 
+    }
     let riskCpu=Math.min(100, (sys.cpu/95)**2*100); let riskRam=Math.min(100, (sys.ram/90)**2*100); let netRisk=Math.min(100, (sys.netIn/450)*100); document.getElementById('riskCpuNum').innerText=Math.floor(riskCpu); document.getElementById('riskRamNum').innerText=Math.floor(riskRam); document.getElementById('riskCpuBarFill').style.width=riskCpu+'%'; document.getElementById('riskRamBarFill').style.width=riskRam+'%'; document.getElementById('netRiskFill').style.width=netRisk+'%'; 
     let health=Math.max(0,100-(sys.cpu*0.55+sys.ram*0.35+(sys.netIn/500)*15)); updateHealthRing(health); 
     let cpuCritFlag=sys.cpu>sys.thresholds.cpuCrit; if(cpuCritFlag && sys.status!=='critical'){ setStatusUI('critical'); addLog('crit',`CPU ${sys.cpu.toFixed(0)}% breached limit`); if(sys.autoHeal && !sys.healingActive) setTimeout(startSelfHeal,400); } else if(sys.cpu<sys.thresholds.cpuWarn-5 && sys.ram<sys.thresholds.ramWarn-5 && sys.status==='warning') setStatusUI('safe'); else if(sys.cpu>sys.thresholds.cpuWarn && sys.status==='safe'){ setStatusUI('warning'); addLog('warn','High CPU sustained'); } 
@@ -586,7 +627,46 @@ setInterval(loadMetrics, 2000);
   function filterLogUI(f){ sys.logFilter=f; document.querySelectorAll('.log-entry').forEach(el=>{ let type=el.children[1]?.innerText.toLowerCase(); if(f==='all' || type===f) el.style.display='flex'; else el.style.display='none'; }); document.getElementById('logFilterAll').style.background=f==='all'?'#2b9eff':'none'; document.getElementById('logFilterCrit').style.background=f==='crit'?'#ff4d6d':'none'; }
   function clearLogUI(){ document.getElementById('logList').innerHTML=''; sys.logEntries=[]; }
   
-  window.addEventListener('load',()=>{ initCharts(); setInterval(tickSim,1300); addLog('info','SH/OS v3 initialized — thermal removed, network enhanced'); addLog('safe','Adaptive thresholds & twin predictor active'); document.getElementById('forceRestartBtn').onclick=()=>triggerRestart(); document.getElementById('autoHealToggle').onchange=e=>sys.autoHeal=e.target.checked; document.getElementById('rtSoft').onclick=()=>{ sys.restartType='soft'; addLog('info','Restart mode: SOFT'); }; document.getElementById('rtHard').onclick=()=>{ sys.restartType='hard'; addLog('info','Restart mode: HARD'); }; document.getElementById('rtDelay').onclick=()=>{ sys.restartType='delayed'; addLog('info','Restart mode: DELAYED'); }; document.getElementById('demoOverloadBtn').onclick=()=>{ sys.overloadDemo=true; sys.cpu=rand(87,96); sys.ram=rand(82,92); addLog('warn','Demo: overload simulation'); }; document.getElementById('demoAttackBtn').onclick=()=>{ sys.attackDemo=true; sys.netIn=rand(320,500); addLog('crit','Demo: DDoS attack simulation'); setDefenseModeUI(true); }; document.getElementById('demoRecoverBtn').onclick=()=>{ sys.overloadDemo=false; sys.attackDemo=false; sys.cpu=rand(20,40); sys.ram=rand(30,45); sys.netIn=rand(6,25); setDefenseModeUI(false); setStatusUI('safe'); addLog('safe','Demo: full recovery'); }; document.getElementById('demoHealBtn').onclick=()=>{ if(!sys.healingActive && !sys.restarting){ sys.cpu=rand(85,92); sys.ram=rand(80,88); startSelfHeal(); } }; tickSim(); });
+  window.addEventListener('load',()=>{
+    initCharts();
+    setInterval(tickSim,1300);
+    if (useBackend) {
+      pollBackend();
+      setInterval(pollBackend, 2000);
+    }
+    addLog('info','AUTO HEAL initialized — backend integration active');
+    addLog('safe','Adaptive thresholds & twin predictor active');
+    document.getElementById('forceRestartBtn').onclick=()=>triggerRestart();
+    document.getElementById('autoHealToggle').onchange=e=>sys.autoHeal=e.target.checked;
+    document.getElementById('rtSoft').onclick=()=>{ sys.restartType='soft'; addLog('info','Restart mode: SOFT'); };
+    document.getElementById('rtHard').onclick=()=>{ sys.restartType='hard'; addLog('info','Restart mode: HARD'); };
+    document.getElementById('rtDelay').onclick=()=>{ sys.restartType='delayed'; addLog('info','Restart mode: DELAYED'); };
+    // Demo buttons: also trigger backend ingest to exercise actions
+    document.getElementById('demoOverloadBtn').onclick=async ()=>{
+      try {
+        const b = { cpu: 90, memory: 65, network: 70, dry_run: true };
+        await fetch(`${API_BASE}/metrics/ingest`, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(b) });
+        addLog('warn','Demo: internal overload posted to backend');
+      } catch {}
+    };
+    document.getElementById('demoAttackBtn').onclick=async ()=>{
+      try {
+        const b = { cpu: 92, memory: 60, network: 450, dry_run: true };
+        await fetch(`${API_BASE}/metrics/ingest`, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(b) });
+        addLog('crit','Demo: DDoS attack posted to backend');
+        setDefenseModeUI(true);
+      } catch {}
+    };
+    document.getElementById('demoRecoverBtn').onclick=()=>{ setDefenseModeUI(false); setStatusUI('safe'); addLog('safe','Demo: recovery'); };
+    document.getElementById('demoHealBtn').onclick=async ()=>{
+      try {
+        const b = { cpu: 70, memory: 92, network: 60, dry_run: true };
+        await fetch(`${API_BASE}/metrics/ingest`, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(b) });
+        addLog('info','Demo: heal (memory leak) posted to backend');
+      } catch {}
+    };
+    tickSim();
+  });
 </script>
 </body>
 </html>
