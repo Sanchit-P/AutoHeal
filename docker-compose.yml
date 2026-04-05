@@ -24,6 +24,7 @@ services:
       - "8080:80"
     volumes:
       - ./Webpage.html:/usr/share/nginx/html/index.html:ro
+      - ./assets:/usr/share/nginx/html/assets:ro
     depends_on:
       - backend
     restart: unless-stopped
