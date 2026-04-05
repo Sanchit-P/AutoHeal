@@ -1,6 +1,9 @@
 import time
+import sys
+import io
 import random
 import requests
+sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding="utf-8")
 
 # --- Config ---
 BACKEND_URL = "http://127.0.0.1:8000/metrics/ingest"
@@ -14,8 +17,8 @@ def log_event(message: str):
 
 def generate_ddos_metrics():
     """Simulate CPU + Network spikes (DDoS scenario)."""
-    cpu_usage = random.randint(85, 100)        # High CPU
-    network_traffic = random.randint(200, 500) # High network traffic
+    cpu_usage = random.randint(85, 100)        
+    network_traffic = random.randint(300, 500) # High network traffic
     memory_usage = random.randint(40, 70)      # Normal memory
     return {
         "cpu": cpu_usage,
