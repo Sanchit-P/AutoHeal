@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: rate-limit-service
+spec:
+  selector:
+    app: rate-limit   # must match the label in your Deployment
+  ports:
+    - protocol: TCP
+      port: 80        # external port exposed by the service
+      targetPort: 8000 # port inside the container (from your Dockerfile / app)
+  type: NodePort       # exposes service on a port accessible from outside the cluster
