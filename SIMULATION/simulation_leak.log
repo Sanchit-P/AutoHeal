@@ -1,0 +1,208 @@
+2026-04-04 19:16:48 - Starting Leak simulation...
+2026-04-04 19:16:48 - Metrics:
+cpu=86
+network=49
+memory=99
+dry_run=True
+2026-04-04 19:16:48 - Backend status: healthy. No action taken.
+2026-04-04 19:16:50 - Metrics:
+cpu=86
+network=31
+memory=83
+dry_run=True
+2026-04-04 19:16:51 - Backend decision: Rolling restart → Simulating rolling restart...
+2026-04-04 19:16:53 - Metrics:
+cpu=91
+network=74
+memory=92
+dry_run=True
+2026-04-04 19:16:54 - Backend decision: Rolling restart → Simulating rolling restart...
+2026-04-04 19:16:56 - Metrics:
+cpu=99
+network=56
+memory=80
+dry_run=True
+2026-04-04 19:16:58 - Backend decision: Rolling restart → Simulating rolling restart...
+2026-04-04 19:17:00 - Metrics:
+cpu=94
+network=46
+memory=90
+dry_run=True
+2026-04-04 19:17:01 - Backend decision: Rolling restart → Simulating rolling restart...
+2026-04-04 19:17:03 - Metrics:
+cpu=98
+network=38
+memory=96
+dry_run=True
+2026-04-04 19:17:04 - Backend decision: Rolling restart → Simulating rolling restart...
+2026-04-04 19:26:10 - Starting Leak simulation...
+2026-04-04 19:26:10 - Metrics:
+cpu=91
+network=73
+memory=97
+dry_run=True
+2026-04-04 19:26:11 - Backend decision: Rolling restart → Simulating rolling restart...
+2026-04-04 19:26:13 - Metrics:
+cpu=89
+network=62
+memory=99
+dry_run=True
+2026-04-04 19:26:14 - Backend decision: Rolling restart → Simulating rolling restart...
+2026-04-04 19:26:16 - Metrics:
+cpu=91
+network=34
+memory=81
+dry_run=True
+2026-04-04 19:26:17 - Backend decision: Rolling restart → Simulating rolling restart...
+2026-04-04 19:26:19 - Metrics:
+cpu=92
+network=48
+memory=94
+dry_run=True
+2026-04-04 19:26:20 - Backend decision: Rolling restart → Simulating rolling restart...
+2026-04-04 19:26:22 - Metrics:
+cpu=99
+network=46
+memory=80
+dry_run=True
+2026-04-04 19:26:23 - Backend decision: Rolling restart → Simulating rolling restart...
+2026-04-04 19:26:25 - Metrics:
+cpu=87
+network=47
+memory=89
+dry_run=True
+2026-04-04 19:26:26 - Backend decision: Rolling restart → Simulating rolling restart...
+2026-04-04 19:26:28 - Metrics:
+cpu=89
+network=73
+memory=83
+dry_run=True
+2026-04-04 19:26:30 - Backend decision: Rolling restart → Simulating rolling restart...
+2026-04-04 19:26:32 - Metrics:
+cpu=93
+network=47
+memory=81
+dry_run=True
+2026-04-04 19:26:33 - Backend decision: Rolling restart → Simulating rolling restart...
+2026-04-04 19:26:35 - Metrics:
+cpu=100
+network=45
+memory=92
+dry_run=True
+2026-04-04 19:26:36 - Backend decision: Rolling restart → Simulating rolling restart...
+2026-04-04 19:26:38 - Metrics:
+cpu=86
+network=56
+memory=100
+dry_run=True
+2026-04-04 19:26:39 - Backend decision: Rolling restart → Simulating rolling restart...
+2026-04-04 19:26:41 - Metrics:
+cpu=100
+network=43
+memory=80
+dry_run=True
+2026-04-04 19:26:43 - Backend decision: Rolling restart → Simulating rolling restart...
+2026-04-04 19:26:45 - Metrics:
+cpu=93
+network=30
+memory=86
+dry_run=True
+2026-04-04 19:26:46 - Backend decision: Rolling restart → Simulating rolling restart...
+2026-04-04 19:26:48 - Metrics:
+cpu=98
+network=54
+memory=86
+dry_run=True
+2026-04-04 19:26:48 - Backend status: healthy. No action taken.
+2026-04-04 19:26:50 - Metrics:
+cpu=97
+network=31
+memory=100
+dry_run=True
+2026-04-04 19:26:51 - Backend decision: Rolling restart → Simulating rolling restart...
+2026-04-04 19:26:53 - Metrics:
+cpu=91
+network=73
+memory=86
+dry_run=True
+2026-04-04 19:26:54 - Backend decision: Rolling restart → Simulating rolling restart...
+2026-04-04 19:26:56 - Metrics:
+cpu=92
+network=30
+memory=84
+dry_run=True
+2026-04-04 19:26:57 - Backend decision: Rolling restart → Simulating rolling restart...
+2026-04-04 19:26:59 - Metrics:
+cpu=85
+network=31
+memory=91
+dry_run=True
+2026-04-04 19:27:01 - Backend decision: Rolling restart → Simulating rolling restart...
+2026-04-04 19:27:03 - Metrics:
+cpu=92
+network=44
+memory=82
+dry_run=True
+2026-04-04 19:27:04 - Backend decision: Rolling restart → Simulating rolling restart...
+2026-04-04 19:27:06 - Metrics:
+cpu=91
+network=55
+memory=89
+dry_run=True
+2026-04-04 20:24:16 - Starting Leak simulation...
+2026-04-04 20:24:16 - Metrics:
+cpu=99
+network=69
+memory=86
+dry_run=True
+2026-04-04 20:24:18 - Backend decision: Rolling restart → Simulating rolling restart...
+2026-04-04 20:24:20 - Metrics:
+cpu=86
+network=34
+memory=88
+dry_run=True
+2026-04-04 20:24:21 - Backend decision: Rolling restart → Simulating rolling restart...
+2026-04-04 20:24:23 - Metrics:
+cpu=98
+network=44
+memory=82
+dry_run=True
+2026-04-04 20:24:24 - Backend decision: Rolling restart → Simulating rolling restart...
+2026-04-04 20:24:26 - Metrics:
+cpu=98
+network=62
+memory=80
+dry_run=True
+2026-04-04 20:24:27 - Backend decision: Rolling restart → Simulating rolling restart...
+2026-04-04 20:24:29 - Metrics:
+cpu=96
+network=51
+memory=97
+dry_run=True
+2026-04-04 20:24:29 - Backend status: healthy. No action taken.
+2026-04-05 00:00:18 - Starting Leak simulation...
+2026-04-05 00:00:18 - Metrics:
+cpu_usage=99
+network_traffic=31
+memory_usage=87
+2026-04-05 00:00:20 - Backend decision: No action taken.
+2026-04-05 00:00:22 - Metrics:
+cpu_usage=88
+network_traffic=30
+memory_usage=85
+2026-04-05 00:00:24 - Backend decision: No action taken.
+2026-04-05 00:00:26 - Metrics:
+cpu_usage=85
+network_traffic=62
+memory_usage=96
+2026-04-05 00:00:28 - Backend decision: No action taken.
+2026-04-05 00:00:30 - Metrics:
+cpu_usage=87
+network_traffic=41
+memory_usage=98
+2026-04-05 00:00:32 - Backend decision: No action taken.
+2026-04-05 00:00:34 - Metrics:
+cpu_usage=93
+network_traffic=32
+memory_usage=81
+2026-04-05 00:00:36 - Backend decision: No action taken.

@@ -1,0 +1,382 @@
+2026-04-04 19:05:54 - Starting DDoS simulation...
+2026-04-04 19:05:54 - Metrics:
+cpu=94
+network=368
+memory=46
+dry_run=True
+2026-04-04 19:05:55 - Error contacting backend: 'charmap' codec can't encode character '\u2192' in position 49: character maps to <undefined>
+2026-04-04 19:05:57 - Metrics:
+cpu=97
+network=232
+memory=46
+dry_run=True
+2026-04-04 19:05:59 - Error contacting backend: 'charmap' codec can't encode character '\u2192' in position 49: character maps to <undefined>
+2026-04-04 19:06:01 - Metrics:
+cpu=88
+network=214
+memory=41
+dry_run=True
+2026-04-04 19:06:01 - Backend status: healthy. No action taken.
+2026-04-04 19:06:03 - Metrics:
+cpu=90
+network=462
+memory=69
+dry_run=True
+2026-04-04 19:06:04 - Error contacting backend: 'charmap' codec can't encode character '\u2192' in position 49: character maps to <undefined>
+2026-04-04 19:06:06 - Metrics:
+cpu=96
+network=360
+memory=58
+dry_run=True
+2026-04-04 19:06:07 - Error contacting backend: 'charmap' codec can't encode character '\u2192' in position 49: character maps to <undefined>
+2026-04-04 19:06:09 - Metrics:
+cpu=100
+network=288
+memory=57
+dry_run=True
+2026-04-04 19:06:11 - Error contacting backend: 'charmap' codec can't encode character '\u2192' in position 49: character maps to <undefined>
+2026-04-04 19:06:13 - Metrics:
+cpu=98
+network=429
+memory=51
+dry_run=True
+2026-04-04 19:08:28 - Starting DDoS simulation...
+2026-04-04 19:08:28 - Metrics:
+cpu=94
+network=395
+memory=52
+dry_run=True
+2026-04-04 19:08:29 - Error contacting backend: 'charmap' codec can't encode character '\u2192' in position 49: character maps to <undefined>
+2026-04-04 19:08:31 - Metrics:
+cpu=94
+network=394
+memory=52
+dry_run=True
+2026-04-04 19:08:33 - Error contacting backend: 'charmap' codec can't encode character '\u2192' in position 49: character maps to <undefined>
+2026-04-04 19:08:35 - Metrics:
+cpu=85
+network=211
+memory=70
+dry_run=True
+2026-04-04 19:08:36 - Error contacting backend: 'charmap' codec can't encode character '\u2192' in position 49: character maps to <undefined>
+2026-04-04 19:08:38 - Metrics:
+cpu=93
+network=382
+memory=48
+dry_run=True
+2026-04-04 19:09:38 - Starting DDoS simulation...
+2026-04-04 19:09:38 - Metrics:
+cpu=88
+network=464
+memory=60
+dry_run=True
+2026-04-04 19:09:39 - Error contacting backend: 'charmap' codec can't encode character '\u2192' in position 49: character maps to <undefined>
+2026-04-04 19:09:41 - Metrics:
+cpu=85
+network=208
+memory=61
+dry_run=True
+2026-04-04 19:13:13 - Starting DDoS simulation...
+2026-04-04 19:13:13 - Metrics:
+cpu=98
+network=360
+memory=48
+dry_run=True
+2026-04-04 19:13:15 - Backend decision: Throttle → Simulating traffic shaping...
+2026-04-04 19:13:17 - Metrics:
+cpu=88
+network=285
+memory=48
+dry_run=True
+2026-04-04 19:13:18 - Backend decision: Throttle → Simulating traffic shaping...
+2026-04-04 19:13:20 - Metrics:
+cpu=100
+network=299
+memory=41
+dry_run=True
+2026-04-04 19:13:20 - Backend status: healthy. No action taken.
+2026-04-04 19:13:22 - Metrics:
+cpu=94
+network=390
+memory=56
+dry_run=True
+2026-04-04 19:13:23 - Backend decision: Throttle → Simulating traffic shaping...
+2026-04-04 19:13:25 - Metrics:
+cpu=88
+network=454
+memory=41
+dry_run=True
+2026-04-04 19:13:25 - Backend status: healthy. No action taken.
+2026-04-04 19:13:27 - Metrics:
+cpu=86
+network=370
+memory=56
+dry_run=True
+2026-04-04 19:13:28 - Backend decision: Throttle → Simulating traffic shaping...
+2026-04-04 19:13:30 - Metrics:
+cpu=96
+network=418
+memory=48
+dry_run=True
+2026-04-04 19:13:32 - Backend decision: Throttle → Simulating traffic shaping...
+2026-04-04 19:13:34 - Metrics:
+cpu=87
+network=482
+memory=49
+dry_run=True
+2026-04-04 19:13:35 - Backend decision: Throttle → Simulating traffic shaping...
+2026-04-04 19:13:37 - Metrics:
+cpu=98
+network=389
+memory=44
+dry_run=True
+2026-04-04 19:13:38 - Backend decision: Throttle → Simulating traffic shaping...
+2026-04-04 19:13:40 - Metrics:
+cpu=99
+network=375
+memory=40
+dry_run=True
+2026-04-04 19:13:40 - Backend status: healthy. No action taken.
+2026-04-04 19:13:42 - Metrics:
+cpu=93
+network=398
+memory=63
+dry_run=True
+2026-04-04 19:13:43 - Backend decision: Throttle → Simulating traffic shaping...
+2026-04-04 19:13:45 - Metrics:
+cpu=95
+network=386
+memory=52
+dry_run=True
+2026-04-04 19:13:46 - Backend decision: Throttle → Simulating traffic shaping...
+2026-04-04 19:13:48 - Metrics:
+cpu=96
+network=375
+memory=55
+dry_run=True
+2026-04-04 19:13:49 - Backend decision: Throttle → Simulating traffic shaping...
+2026-04-05 00:04:23 - Starting DDoS simulation...
+2026-04-05 00:04:23 - Metrics:
+cpu_usage=98
+network_traffic=432
+memory_usage=57
+2026-04-05 00:04:25 - Backend decision: No action taken.
+2026-04-05 00:04:27 - Metrics:
+cpu_usage=99
+network_traffic=335
+memory_usage=70
+2026-04-05 00:04:29 - Backend decision: No action taken.
+2026-04-05 00:04:31 - Metrics:
+cpu_usage=97
+network_traffic=247
+memory_usage=68
+2026-04-05 00:04:33 - Backend decision: No action taken.
+2026-04-05 00:04:35 - Metrics:
+cpu_usage=91
+network_traffic=202
+memory_usage=43
+2026-04-05 00:04:37 - Backend decision: No action taken.
+2026-04-05 00:04:39 - Metrics:
+cpu_usage=95
+network_traffic=203
+memory_usage=67
+2026-04-05 00:04:41 - Backend decision: No action taken.
+2026-04-05 00:04:43 - Metrics:
+cpu_usage=89
+network_traffic=371
+memory_usage=70
+2026-04-05 00:04:45 - Backend decision: No action taken.
+2026-04-05 00:04:47 - Metrics:
+cpu_usage=86
+network_traffic=203
+memory_usage=49
+2026-04-05 00:04:49 - Backend decision: No action taken.
+2026-04-05 00:04:51 - Metrics:
+cpu_usage=92
+network_traffic=219
+memory_usage=42
+2026-04-05 00:04:53 - Backend decision: No action taken.
+2026-04-05 00:04:55 - Metrics:
+cpu_usage=86
+network_traffic=347
+memory_usage=49
+2026-04-05 00:04:57 - Backend decision: No action taken.
+2026-04-05 00:04:59 - Metrics:
+cpu_usage=88
+network_traffic=422
+memory_usage=61
+2026-04-05 00:06:13 - Starting DDoS simulation...
+2026-04-05 00:06:13 - Metrics:
+cpu_usage=94
+network_traffic=475
+memory_usage=40
+2026-04-05 00:06:15 - Backend decision: No action taken.
+2026-04-05 00:06:17 - Metrics:
+cpu_usage=86
+network_traffic=302
+memory_usage=42
+2026-04-05 00:06:19 - Backend decision: No action taken.
+2026-04-05 00:06:21 - Metrics:
+cpu_usage=85
+network_traffic=247
+memory_usage=56
+2026-04-05 00:06:23 - Backend decision: No action taken.
+2026-04-05 00:06:25 - Metrics:
+cpu_usage=99
+network_traffic=427
+memory_usage=68
+2026-04-05 00:06:27 - Backend decision: No action taken.
+2026-04-05 00:06:29 - Metrics:
+cpu_usage=86
+network_traffic=431
+memory_usage=63
+2026-04-05 00:40:54 - Starting DDoS simulation...
+2026-04-05 00:40:54 - Metrics:
+cpu=89
+network=383
+memory=40
+dry_run=True
+2026-04-05 00:40:58 - Backend decision: Throttle → Simulating traffic shaping...
+2026-04-05 00:41:00 - Metrics:
+cpu=93
+network=484
+memory=67
+dry_run=True
+2026-04-05 00:41:01 - Backend decision: Throttle → Simulating traffic shaping...
+2026-04-05 00:41:03 - Metrics:
+cpu=85
+network=283
+memory=53
+dry_run=True
+2026-04-05 00:41:04 - Backend decision: Throttle → Simulating traffic shaping...
+2026-04-05 00:41:06 - Metrics:
+cpu=87
+network=422
+memory=44
+dry_run=True
+2026-04-05 00:41:08 - Backend decision: Throttle → Simulating traffic shaping...
+2026-04-05 00:41:10 - Metrics:
+cpu=99
+network=204
+memory=55
+dry_run=True
+2026-04-05 00:41:11 - Backend decision: Throttle → Simulating traffic shaping...
+2026-04-05 00:41:13 - Metrics:
+cpu=95
+network=282
+memory=40
+dry_run=True
+2026-04-05 00:41:14 - Backend decision: Throttle → Simulating traffic shaping...
+2026-04-05 00:41:16 - Metrics:
+cpu=95
+network=370
+memory=51
+dry_run=True
+2026-04-05 00:41:17 - Backend decision: Throttle → Simulating traffic shaping...
+2026-04-05 00:41:19 - Metrics:
+cpu=89
+network=415
+memory=58
+dry_run=True
+2026-04-05 00:41:20 - Backend decision: Throttle → Simulating traffic shaping...
+2026-04-05 00:41:22 - Metrics:
+cpu=95
+network=351
+memory=61
+dry_run=True
+2026-04-05 00:41:24 - Backend decision: Throttle → Simulating traffic shaping...
+2026-04-05 00:41:26 - Metrics:
+cpu=86
+network=498
+memory=40
+dry_run=True
+2026-04-05 00:41:27 - Backend decision: Throttle → Simulating traffic shaping...
+2026-04-05 00:41:29 - Metrics:
+cpu=87
+network=356
+memory=58
+dry_run=True
+2026-04-05 00:41:31 - Backend decision: Throttle → Simulating traffic shaping...
+2026-04-05 00:41:33 - Metrics:
+cpu=89
+network=397
+memory=62
+dry_run=True
+2026-04-05 00:41:35 - Backend decision: Throttle → Simulating traffic shaping...
+2026-04-05 00:41:37 - Metrics:
+cpu=89
+network=469
+memory=47
+dry_run=True
+2026-04-05 00:41:38 - Backend decision: Throttle → Simulating traffic shaping...
+2026-04-05 00:41:40 - Metrics:
+cpu=89
+network=462
+memory=69
+dry_run=True
+2026-04-05 00:41:41 - Backend decision: Throttle → Simulating traffic shaping...
+2026-04-05 00:41:43 - Metrics:
+cpu=98
+network=361
+memory=43
+dry_run=True
+2026-04-05 00:41:45 - Backend decision: Throttle → Simulating traffic shaping...
+2026-04-05 00:41:47 - Metrics:
+cpu=86
+network=294
+memory=49
+dry_run=True
+2026-04-05 00:41:48 - Backend decision: Throttle → Simulating traffic shaping...
+2026-04-05 00:41:50 - Metrics:
+cpu=86
+network=405
+memory=63
+dry_run=True
+2026-04-05 00:41:52 - Backend decision: Throttle → Simulating traffic shaping...
+2026-04-05 00:41:54 - Metrics:
+cpu=99
+network=245
+memory=43
+dry_run=True
+2026-04-05 00:41:55 - Backend decision: Throttle → Simulating traffic shaping...
+2026-04-05 00:41:57 - Metrics:
+cpu=94
+network=493
+memory=55
+dry_run=True
+2026-04-05 00:41:59 - Backend decision: Throttle → Simulating traffic shaping...
+2026-04-05 00:42:01 - Metrics:
+cpu=99
+network=233
+memory=49
+dry_run=True
+2026-04-05 00:42:02 - Backend decision: Throttle → Simulating traffic shaping...
+2026-04-05 00:42:04 - Metrics:
+cpu=95
+network=275
+memory=42
+dry_run=True
+2026-04-05 00:42:06 - Backend decision: Throttle → Simulating traffic shaping...
+2026-04-05 00:42:08 - Metrics:
+cpu=87
+network=277
+memory=45
+dry_run=True
+2026-04-05 00:42:09 - Backend decision: Throttle → Simulating traffic shaping...
+2026-04-05 00:42:11 - Metrics:
+cpu=87
+network=419
+memory=62
+dry_run=True
+2026-04-05 00:42:12 - Backend decision: Throttle → Simulating traffic shaping...
+2026-04-05 00:42:14 - Metrics:
+cpu=86
+network=459
+memory=54
+dry_run=True
+2026-04-05 00:42:15 - Backend decision: Throttle → Simulating traffic shaping...
+2026-04-05 00:42:17 - Metrics:
+cpu=100
+network=240
+memory=55
+dry_run=True
