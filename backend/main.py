@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from routes import metrics, healing, insights, admin
+from routes import metrics, healing, insights, admin, audit
 from db.database import init_db
 
 app = FastAPI(title="AutoHeal API")
@@ -20,6 +20,7 @@ app.include_router(metrics.router)
 app.include_router(healing.router)
 app.include_router(insights.router)
 app.include_router(admin.router)
+app.include_router(audit.router)
 
 @app.get("/")
 def health_check():

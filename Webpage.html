@@ -401,7 +401,21 @@
       <div class="card" id="aiInsightCard" style="background:linear-gradient(105deg, #0b1420, #03070f); border-left:4px solid var(--info);">
         <div style="display:flex; align-items:center; gap:12px; flex-wrap:wrap; justify-content:space-between;">
           <div style="display:flex; gap:12px; align-items:center;"><span style="font-size:1.8rem;">🧠</span><div><div style="font-size:0.65rem;letter-spacing:0.2em;">AI TREND FORECAST</div><strong id="aiMsgText">Monitoring telemetry — stable envelope</strong></div></div>
-          <div><span id="aiConfidence" style="font-family:monospace;font-size:0.75rem;background:#00000033;padding:4px 10px;border-radius:40px;">confidence 94%</span></div>
+          <div style="display:flex; gap:8px; align-items:center;">
+            <button id="saveRcaBtn" class="btn btn-info" style="padding:6px 10px;">Save RCA</button>
+            <span id="aiConfidence" style="font-family:monospace;font-size:0.75rem;background:#00000033;padding:4px 10px;border-radius:40px;">confidence 94%</span>
+          </div>
+        </div>
+        <div id="rcaPanel" style="margin-top:10px; background:#0c1420; border:1px solid var(--border-subtle); border-radius:12px; padding:10px;">
+          <div style="display:flex; justify-content:space-between; align-items:center;">
+            <div style="font-size:0.7rem; letter-spacing:0.12em; text-transform:uppercase; color:var(--text-muted);">Root Cause (live)</div>
+            <label style="font-size:0.7rem; display:flex; align-items:center; gap:6px; color:var(--text-secondary);">
+              <input type="checkbox" id="rcaLiveToggle" checked>
+              Live
+            </label>
+          </div>
+          <div id="rcaCauseLine" style="margin-top:6px; font-size:0.9rem; color:var(--text-primary);">likely: — (conf —)</div>
+          <ul id="rcaReasonsList" style="margin-top:6px; padding-left:16px; font-size:0.8rem; color:var(--text-secondary);"></ul>
         </div>
       </div>
       <!-- Attack Banner -->
@@ -444,6 +458,15 @@
       <div class="card"><div class="section-label">🛡️ SYSTEM HEALTH</div><div class="health-ring"><div class="ring-wrapper"><svg width="100" height="100" viewBox="0 0 100 100"><circle cx="50" cy="50" r="42" fill="none" stroke="#1e2a3a" stroke-width="6"/><circle id="healthRingSvg" cx="50" cy="50" r="42" fill="none" stroke="var(--safe)" stroke-width="6" stroke-dasharray="264" stroke-dashoffset="0" stroke-linecap="round" transform="rotate(-90 50 50)"/></svg><div class="ring-score"><span id="healthScoreSpan">100</span><span style="font-size:0.65rem;">pts</span></div></div></div><div style="text-align:center; margin-top:8px;"><span id="healthGradeSpan" style="font-weight:bold;">EXCELLENT</span></div></div>
 
       <div class="card"><div class="section-label">⚙️ ADAPTIVE LIMITS</div><div style="display:flex; justify-content:space-between;"><span>CPU warn/crit</span><span><span id="threshCpuWarnDisplay">75</span>% / <span id="threshCpuCritDisplay">90</span>%</span></div><div style="display:flex; justify-content:space-between;"><span>RAM warn/crit</span><span><span id="threshRamWarnDisplay">75</span>% / <span id="threshRamCritDisplay">90</span>%</span></div><div class="section-label" style="margin-top:12px;">📊 RISK METER</div><div>CPU risk <span id="riskCpuNum">0</span>%</div><div class="progress-bar-bg"><div id="riskCpuBarFill" style="height:4px; width:0%; background:var(--crit);"></div></div><div>RAM risk <span id="riskRamNum">0</span>%</div><div class="progress-bar-bg"><div id="riskRamBarFill" style="height:4px; width:0%; background:var(--warn);"></div></div><div style="margin-top:8px;">Network Anomaly Score</div><div class="progress-bar-bg"><div id="netRiskFill" style="height:4px; width:0%; background:var(--info);"></div></div></div>
+
+      <div class="card">
+        <div class="section-label">🔐 SECURITY CHECK</div>
+        <textarea id="secText" rows="3" style="width:100%; background:var(--bg-elevated); color:var(--text-primary); border:1px solid var(--border-subtle); border-radius:12px; padding:8px;" placeholder="Paste text/log to assess"></textarea>
+        <div class="btn-group" style="margin-top:8px;">
+          <button class="btn btn-info" id="runSecBtn">RUN & SAVE</button>
+        </div>
+        <div id="secResult" style="font-size:0.75rem; margin-top:8px; color:var(--text-secondary); word-break:break-word;"></div>
+      </div>
     </div>
   </div>
   <footer><span>AUTO HEAL · Autonomous healing fabric</span><span>Uptime: <span id="uptimeSpan">0s</span> · restarts: <span id="restartCountSpan">0</span></span></footer>
@@ -577,6 +600,88 @@
     else if(predNet>120){ msg.innerText=`🌊 Network surge expected — ingress ${predNet.toFixed(0)} MB/s`; confSpan.innerText='anomaly watch'; } 
     else { msg.innerText=`Telemetry stable — predictive envelope normal`; confSpan.innerText='confidence 96%'; } 
   }
+
+  async function saveCurrentRCA(){
+    try {
+      const metrics = { cpu: sys.cpu, memory: sys.ram, network: sys.netIn };
+      const explain = await fetch(`${API_BASE}/insights/explain`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ metrics, use_recent_logs: true, log_limit: 10 })
+      }).then(r=>r.json());
+      await fetch(`${API_BASE}/audit/llm`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ metrics, analysis: explain })
+      });
+      addLog('info','Saved RCA to audit log');
+      showToast('safe','RCA Saved','LLM analysis stored in audit log');
+    } catch (e) {
+      addLog('warn','Failed to save RCA');
+    }
+  }
+
+  async function runAndSaveSecurityCheck(){
+    try {
+      const ta = document.getElementById('secText');
+      const out = document.getElementById('secResult');
+      const text = (ta?.value || '').trim();
+      if (!text) { if (out) out.innerText = 'Enter text first.'; return; }
+      const result = await fetch(`${API_BASE}/insights/security-check`, {
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({ text, check_type: 'generic' })
+      }).then(r=>r.json());
+      await fetch(`${API_BASE}/audit/llm`, {
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({ metrics: { check_type:'generic' }, analysis: result })
+      });
+      if (out) out.innerText = typeof result === 'string' ? result : JSON.stringify(result);
+      addLog('info','Security check saved to audit');
+      showToast('safe','Security Audit','Result stored in audit log');
+    } catch (e) {
+      addLog('warn','Security check failed');
+      const out = document.getElementById('secResult');
+      if (out) out.innerText = 'Security check failed. See console.';
+    }
+  }
+  
+  // --- Live RCA functions ---
+  let rcaTimer = null;
+  function renderRCA(payload){
+    const causeLine = document.getElementById('rcaCauseLine');
+    const list = document.getElementById('rcaReasonsList');
+    if (!causeLine || !list) return;
+    const analysis = payload?.analysis || payload || {};
+    const cause = analysis.likely_cause ?? 'Unknown';
+    const conf = analysis.confidence ?? '—';
+    causeLine.innerText = `likely: ${cause} (conf ${conf})`;
+    const reasons = Array.isArray(analysis.reasons) ? analysis.reasons : [];
+    list.innerHTML = reasons.slice(0,4).map(r => `<li>${String(r)}</li>`).join('');
+  }
+  async function fetchLiveRCA(){
+    try{
+      const metrics = { cpu: sys.cpu, memory: sys.ram, network: sys.netIn };
+      const res = await fetch(`${API_BASE}/insights/explain`, {
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({ metrics, use_recent_logs: true, log_limit: 6 })
+      }).then(r=>r.json());
+      renderRCA(res);
+    }catch(e){
+      // ignore transient errors
+    }
+  }
+  function startLiveRCA(){
+    if (rcaTimer) clearInterval(rcaTimer);
+    fetchLiveRCA();
+    rcaTimer = setInterval(fetchLiveRCA, 8000);
+  }
+  function stopLiveRCA(){
+    if (rcaTimer) clearInterval(rcaTimer);
+    rcaTimer = null;
+  }
   
   function updateAdaptiveThresholds(){ 
     if(historyStore.cpu.length<8) return; let avgCpu=historyStore.cpu.reduce((a,b)=>a+b,0)/historyStore.cpu.length; let newWarn=Math.min(88, Math.max(60, avgCpu+14)); let newCrit=Math.min(96, Math.max(75, avgCpu+26)); sys.thresholds.cpuWarn=Math.round(newWarn); sys.thresholds.cpuCrit=Math.round(newCrit); document.getElementById('threshCpuWarnDisplay').innerText=sys.thresholds.cpuWarn; document.getElementById('threshCpuCritDisplay').innerText=sys.thresholds.cpuCrit; }
@@ -613,6 +718,12 @@
     // kick an immediate backend poll so the page shows data right away
     pollBackend();
     setInterval(pollBackend, 2000);
+    // set up live RCA
+    const rcaT = document.getElementById('rcaLiveToggle');
+    if (rcaT) {
+      rcaT.onchange = (e)=> { if (e.target.checked) startLiveRCA(); else stopLiveRCA(); };
+      startLiveRCA();
+    }
     addLog('info','SH/OS v3 initialized — backend polling active');
     addLog('safe','Adaptive thresholds & twin predictor active');
     document.getElementById('forceRestartBtn').onclick=()=>triggerRestart();
@@ -624,6 +735,9 @@
     document.getElementById('demoAttackBtn').onclick=()=>{ sys.attackDemo=true; sys.netIn=rand(320,500); addLog('crit','Demo: DDoS attack simulation'); setDefenseModeUI(true); };
     document.getElementById('demoRecoverBtn').onclick=()=>{ sys.overloadDemo=false; sys.attackDemo=false; sys.cpu=rand(20,40); sys.ram=rand(30,45); sys.netIn=rand(6,25); setDefenseModeUI(false); setStatusUI('safe'); addLog('safe','Demo: full recovery'); };
     document.getElementById('demoHealBtn').onclick=()=>{ if(!sys.healingActive && !sys.restarting){ sys.cpu=rand(85,92); sys.ram=rand(80,88); startSelfHeal(); } };
+    document.getElementById('saveRcaBtn').onclick=saveCurrentRCA;
+    const runBtn = document.getElementById('runSecBtn');
+    if (runBtn) runBtn.onclick=runAndSaveSecurityCheck;
     tickSim();
   });
 </script>

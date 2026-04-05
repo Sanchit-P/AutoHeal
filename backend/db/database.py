@@ -15,6 +15,15 @@ async def init_db():
                 dry_run INTEGER
             )
         """)
+        await db.execute("""
+            CREATE TABLE IF NOT EXISTS audit_log (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                timestamp TEXT,
+                kind TEXT,
+                metrics TEXT,
+                analysis TEXT
+            )
+        """)
         await db.commit()
 
 async def insert_log(entry: dict):
@@ -34,6 +43,26 @@ async def get_logs(limit=20):
     async with aiosqlite.connect(DB_PATH) as db:
         async with db.execute(
             "SELECT * FROM healing_log ORDER BY id DESC LIMIT ?", (limit,)
+        ) as cursor:
+            rows = await cursor.fetchall()
+            return rows
+
+async def insert_audit(entry: dict):
+    async with aiosqlite.connect(DB_PATH) as db:
+        await db.execute("""
+            INSERT INTO audit_log
+            (timestamp, kind, metrics, analysis)
+            VALUES (?, ?, ?, ?)
+        """, (
+            entry["timestamp"], entry.get("kind", "llm"),
+            entry.get("metrics", ""), entry.get("analysis", "")
+        ))
+        await db.commit()
+
+async def get_audits(limit=25):
+    async with aiosqlite.connect(DB_PATH) as db:
+        async with db.execute(
+            "SELECT * FROM audit_log ORDER BY id DESC LIMIT ?", (limit,)
         ) as cursor:
             rows = await cursor.fetchall()
             return rows
