@@ -451,9 +451,9 @@
 
     <!-- RIGHT SIDEBAR -->
     <div class="controls-card">
-      <div class="card"><div class="section-label">⚡ RESTART CONTROLS</div><div class="btn-group"><button class="btn btn-crit" id="forceRestartBtn">🔁 FORCE RESTART</button><button class="btn btn-warn" id="cancelRestartBtn" disabled>✕ CANCEL</button></div><div class="btn-group" style="margin-top:8px;"><button class="btn btn-info" id="rtSoft">SOFT</button><button class="btn btn-info" id="rtHard" style="border-color:var(--safe);">HARD</button><button class="btn btn-info" id="rtDelay">DELAY</button></div><div class="toggle-row" style="margin-top:12px;"><span>⚙️ AUTO-HEAL / RESTART</span><label><input type="checkbox" id="autoHealToggle" checked><span style="margin-left:8px;">✔️</span></label></div></div>
+      <!-- Restart controls removed -->
 
-      <div class="card"><div class="section-label">🎮 DEMO SCENARIOS</div><div class="btn-group"><button class="btn btn-crit" id="demoOverloadBtn">💥 OVERLOAD</button><button class="btn btn-warn" id="demoAttackBtn">🚨 DDoS ATTACK</button></div><div class="btn-group"><button class="btn btn-safe" id="demoRecoverBtn">✅ RECOVER</button><button class="btn btn-info" id="demoHealBtn">🧬 TEST HEAL</button></div></div>
+      <!-- Demo scenarios removed -->
 
       <div class="card"><div class="section-label">🛡️ SYSTEM HEALTH</div><div class="health-ring"><div class="ring-wrapper"><svg width="100" height="100" viewBox="0 0 100 100"><circle cx="50" cy="50" r="42" fill="none" stroke="#1e2a3a" stroke-width="6"/><circle id="healthRingSvg" cx="50" cy="50" r="42" fill="none" stroke="var(--safe)" stroke-width="6" stroke-dasharray="264" stroke-dashoffset="0" stroke-linecap="round" transform="rotate(-90 50 50)"/></svg><div class="ring-score"><span id="healthScoreSpan">100</span><span style="font-size:0.65rem;">pts</span></div></div></div><div style="text-align:center; margin-top:8px;"><span id="healthGradeSpan" style="font-weight:bold;">EXCELLENT</span></div></div>
 
@@ -469,7 +469,7 @@
       </div>
     </div>
   </div>
-  <footer><span>AUTO HEAL · Autonomous healing fabric</span><span>Uptime: <span id="uptimeSpan">0s</span> · restarts: <span id="restartCountSpan">0</span></span></footer>
+  <footer><span>AUTO HEAL · Autonomous healing fabric</span><span>Uptime: <span id="uptimeSpan">0s</span></span></footer>
 </div>
 
 <script src="./assets/chart.umd.min.js"></script>
